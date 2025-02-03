@@ -1,0 +1,39 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header{
+    padding: 11px 160px;
+    background-color: rgba(157, 241, 241, 0.514);
+}
+
+.headerContent{
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    img{
+        width: 100px;
+    }
+}
+
+.headerBtns{
+    display: flex;
+    gap: 70px;
+}
+
+.headerBtn{
+    height: 55px;
+    width: 150px;
+    border-radius: 16px;
+    cursor: pointer;
+    background-color: white;
+    color: rgb(0, 112, 112);
+    border-color: rgb(0, 150, 155);
+    font-size: 16px;
+    &:hover{
+        opacity: .8;
+    }
+}
