@@ -1,12 +1,13 @@
 import React from 'react'
-import logo from '../Icons/logo.svg'
-import '../styles/Header.css'
-import HeaderBtn from './Button'
+import '../styles/Footer.css'
+import '../styles/App.css'
 
 const Footer = function(){
     return (
-        <div className='header'>
-            <h2 className='footerText'>© ВДК 2025</h2>
+        <div className='footer'>
+            <div className='footerContent container'>
+                <h2 className='footerText'>© ВДК 2025</h2>
+            </div>
         </div>
     )
 }
