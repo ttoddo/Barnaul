@@ -5,9 +5,12 @@
     font-family: Montserrat;
     /* max-width: 1400px; */
 }
-.App{
-    
-}
+/* .App{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+} */
 .container{
     max-width: 1400px;
     margin: 0 auto;
