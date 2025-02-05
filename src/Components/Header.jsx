@@ -1,7 +1,7 @@
 import React from 'react'
-import logo from '../Icons/logo.svg'
+import logo from '../icons/logo.svg'
 import '../styles/Header.css'
-import HeaderBtn from '../UI/HeaderBtn'
+import HeaderBtn from './UI/HeaderButton/HeaderBtn.jsx'
 import '../styles/App.css'
 
 const Header = function(){

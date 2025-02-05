@@ -1,0 +1,24 @@
+.FormBtn{
+    font-size: 20px;
+    font-weight: 400;
+    color: black;
+    background-color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 16px;
+    margin-top: 40px;
+    cursor: pointer;
+    &:hover{
+        margin-top: 42px;
+        opacity: .8;
+        background-color: aliceblue;
+        color: rgb(25, 45, 53);
+        border: solid 2px rgb(81, 132, 207);
+    }
+    &:active{
+        background-color: #ffffff;
+        background-color: .5;
+        color: rgb(124, 202, 253);
+        border: solid 2px rgb(124, 202, 253);
+    }
+}

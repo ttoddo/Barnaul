@@ -19,16 +19,7 @@
     font-weight: 700;
     margin-bottom: 20px;
 }
-.formInput{
-    padding: 20px 10px;
-    font-size: 24px;
-    font-weight: 400;
-    color: #797979;
-    border-radius: 16px;
-    border: none;
-    width: 490px;
-    outline: none;
-}
+
 .formCheckbox{
     accent-color: rgba(146, 201, 252, 0.678);
     margin-right: 5px;
@@ -50,27 +41,17 @@
         }
     }
 }
-.FormBtn{
-    font-size: 20px;
-    font-weight: 400;
-    color: black;
-    background-color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 16px;
-    margin-top: 40px;
-    cursor: pointer;
-    &:hover{
-        margin-top: 42px;
-        opacity: .8;
-        background-color: aliceblue;
-        color: rgb(25, 45, 53);
-        border: solid 2px rgb(81, 132, 207);
-    }
-    &:active{
-        background-color: #ffffff;
-        background-color: .5;
-        color: rgb(124, 202, 253);
-        border: solid 2px rgb(124, 202, 253);
-    }
+
+.inputIcon{
+    position: absolute;
+    width: 30px;
+    right: 15px;
+    top: 18px;
+
+}
+
+.huita{
+    position: relative;
+    vertical-align: middle;
+    width: fit-content;
 }
