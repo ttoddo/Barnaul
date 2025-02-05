@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './FormBtn.module.css'
+import UserProfile from '../../UserProfile/UserProfile'
 
 async function getUser (email, password){
     const api = "http://138.124.127.43:8081/"
@@ -18,6 +19,7 @@ async function getUser (email, password){
       const res = await fetch(api + 'auth/sign-in', settings)
       const data = await res.json()
       console.log('success')
+      localStorage.setItem('TOKEN', data.token)
       return data
     } catch {
       return console.log("error")

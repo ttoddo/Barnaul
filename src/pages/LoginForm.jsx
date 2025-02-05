@@ -1,6 +1,6 @@
 import React, { useState} from 'react'
-import FormBtn from './UI/FormButton/FormBtn.jsx'
-import SignIn from './UI/LoginInput/SignIn.jsx'
+import FormBtn from '../Components/UI/FormButton/FormBtn.jsx'
+import SignIn from '../Components/UI/LoginInput/SignIn.jsx'
 import showPass from '../icons/showPass.svg'
 import hidePass from '../icons/hidePass.svg'
 import '../styles/Form.css'
@@ -17,7 +17,7 @@ const LoginForm = function(props){
 
 function passChange(){
     // eslint-disable-next-line no-cond-assign
-    if(iconType == showPass ){
+    if(iconType === showPass ){
         setInputType('text');
         setIconType(hidePass)
     } else {
