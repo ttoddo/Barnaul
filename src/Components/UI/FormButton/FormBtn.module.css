@@ -4,12 +4,12 @@
     color: black;
     background-color: white;
     padding: 12px 24px;
-    border: none;
+    border: 2px solid transparent;
     border-radius: 16px;
     margin-top: 40px;
     cursor: pointer;
     &:hover{
-        margin-top: 42px;
+        margin-top: 40px;
         opacity: .8;
         background-color: aliceblue;
         color: rgb(25, 45, 53);

@@ -5,6 +5,7 @@ import showPass from '../icons/showPass.svg'
 import hidePass from '../icons/hidePass.svg'
 import '../styles/Form.css'
 import '../styles/App.css'
+import { getUser } from '../Components/ApiReqests/ApiRequests.jsx'
 
 
 
@@ -42,7 +43,7 @@ function passChange(){
                 <a href='a'>Забыли пароль?</a>
 
             </div>
-            <FormBtn email={email} password={password}/>
+            <FormBtn onClick={async () => await getUser(email, password)}/>
         </form>
     )
 }

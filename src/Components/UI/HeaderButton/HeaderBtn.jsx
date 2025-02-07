@@ -1,9 +1,9 @@
 import React from 'react'
 
-const HeaderBtn = function(){
+const HeaderBtn = function(props){
     return (
-        <button className='headerBtn'>
-            Кнопочка
+        <button className='headerBtn' {...props}>
+            {props.value}
         </button>
     )
 }
