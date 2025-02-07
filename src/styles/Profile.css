@@ -10,7 +10,7 @@
     flex-wrap: wrap;
     background-color:#A8CEE1;
     border-radius: 16px;
-    width: 1146px;
+    width: 900px;
     padding: 60px;
     transform: translate(-50%, -50%);
 }
@@ -22,16 +22,16 @@
     flex-direction: column;
     gap: 16px;
     align-items: self-start;
-    height: 320px;
-    width: 482px;
+    height: 300px;
+    width: 360px;
 }
 .userName{
-    font-size: 40px;
+    font-size: 24px;
     font-weight: 600;
 
 }
 .userMail{
-    font-size: 24px;
+    font-size: 14px;
     font-weight: 500;
     color: #464646;
 }
@@ -40,7 +40,7 @@
         display: flex;
         justify-content: space-between;
         width: 100%;
-        font-size: 24px;
+        font-size: 16px;
         font-weight: 400;
         text-transform: uppercase;
     }
@@ -48,7 +48,7 @@
 .profileStat{
     width: 100%;
     padding: 0;
-    height: 331px;
+    height: 250px;
     overflow-y: scroll;
     scrollbar-width: none;
 }

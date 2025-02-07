@@ -10,8 +10,8 @@
 .userText{
     display: flex;
     flex-direction: column;
-    gap: 27px;
-    font-size: 32px;
+    gap: 20px;
+    font-size: 28px;
     font-weight: 400;
     height: 100%;
     label{

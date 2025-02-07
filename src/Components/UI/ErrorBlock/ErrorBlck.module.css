@@ -7,16 +7,22 @@
     border-radius: 24px;
     background-color: #C4D8E1;
 }
+.errorColor{
+    width: 70px;
+    height: 75px;
+    border-radius: 16px;
+    background-color: red;
+}
 .errorInfo{
     display: flex;
-    gap: 50px;
+    gap: 30px;
     align-items: center;
 }
 .errorText{
     display: flex;
     flex-direction: column;
     gap: 27px;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 400;
     height: 100%;
     label{
@@ -24,11 +30,11 @@
         justify-content: space-between;
         gap: 32px;
         color: #646464;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 400;
     }
 }
 .errorStatus{
-    font-size: 32px;
+    font-size: 22px;
     font-weight: 300;
 }

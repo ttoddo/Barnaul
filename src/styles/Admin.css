@@ -10,9 +10,10 @@
     flex-wrap: wrap;
     background-color:#A8CEE1;
     border-radius: 16px;
-    width: 1146px;
+    width: 900px;
     padding: 60px;
     transform: translate(-50%, -50%);
+
 }
 .adminCreateUser, .adminEditUser, .adminUserInfo{
     background-color: white;
@@ -22,8 +23,8 @@
     flex-direction: column;
     gap: 16px;
     align-items: self-start;
-    height: 320px;
-    width: 482px;
+    height: 300px;
+    width: 360px;
 }
 .adminCheckBoxText{
     font-size: 14px;
@@ -44,7 +45,7 @@
     flex-direction: column;
     gap: 12px;
     padding: 0;
-    height: 331px;
+    height: 251px;
     overflow-y: scroll;
     scrollbar-width: none;
 }

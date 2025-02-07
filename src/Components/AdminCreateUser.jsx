@@ -16,7 +16,7 @@ const AdminCreateUser =function(props) {
             <input className='adminCheckBox'  type='checkbox'/>
             Администратор
         </label>
-        <CommonBtn style={{marginTop: 28, fontSize: 18, backgroundColor: `#A7CDE0`}}  value='Добавить пользователя'/>
+        <CommonBtn style={{marginTop: 20, fontSize: 16, backgroundColor: `#A7CDE0`}}  value='Добавить пользователя'/>
     </div>
   )
 }

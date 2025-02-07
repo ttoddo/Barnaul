@@ -8,7 +8,7 @@ const ErrorBlock =function(props) {
   return (
     <div className={styles.error}>
         <div className={styles.errorInfo}>
-            <img className={styles.errorImage} src={red} alt='errorStat'/>
+            <div className={styles.errorColor}></div>
             <div className={styles.errorText}>
                 <p className={styles.errorTitle}>{props.error.title}</p>
                 <label className={styles.errorSubInfo}>

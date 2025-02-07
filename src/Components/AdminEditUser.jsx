@@ -14,7 +14,7 @@ const AdminEditUser =function(props) {
         <AdminInput placeholder='Имя' value={name} onChange={e => setName(e.target.value)}/>
         <AdminInput placeholder='Почта' value={email} onChange={e => setEmail(e.target.value)}/>
         <AdminInput placeholder='Пароль' value={password} onChange={e => setPassword(e.target.value)}/>
-        <CommonBtn style={{fontSize: 18, backgroundColor: `#A7CDE0`}}  value='Изменить данные пользователя'/>
+        <CommonBtn style={{fontSize: 16, backgroundColor: `#A7CDE0`}}  value='Редактировать пользователя'/>
     </div>
   )
 }
