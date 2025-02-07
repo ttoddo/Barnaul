@@ -11,7 +11,7 @@
     background-color:#A8CEE1;
     border-radius: 16px;
     width: 1146px;
-    padding: 92px 80px 93px 60px;
+    padding: 60px;
     transform: translate(-50%, -50%);
 }
 .profileInfo, .profileData, .profileStat{
@@ -22,8 +22,8 @@
     flex-direction: column;
     gap: 16px;
     align-items: self-start;
-    height: fit-content;
-    width: fit-content  ;
+    height: 320px;
+    width: 482px;
 }
 .userName{
     font-size: 40px;
@@ -36,8 +36,6 @@
     color: #464646;
 }
 .profileData{
-    height: 320px;
-    width: 510px;
     label{
         display: flex;
         justify-content: space-between;

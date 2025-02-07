@@ -1,14 +1,20 @@
 
 import React from 'react'
-import styles from '../Components/UI/FormButton/FormBtn.module.css'
+import ProfileInfo from '../Components/ProfileInfo'
+import '../styles/Profile.css'
+import '../styles/App.css'
+import ProfileDataReport from '../Components/ProfileDataReport'
+import ProfileStatistic from '../Components/ProfileStatistic'
 
-const GetToken = () => {
-    console.log(localStorage.getItem('TOKEN'))
-}
 
-const Profile = () => {
+
+const Profile = (props) => {
   return (
-    <button type='button' className={styles.FormBtn} onClick={GetToken}>asdfasdf</button>
+    <div className='profileBlock'>
+      <ProfileInfo/>
+      <ProfileDataReport/>
+      <ProfileStatistic/>
+    </div>
   )
 }
 

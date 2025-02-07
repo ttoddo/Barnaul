@@ -7,9 +7,8 @@
     top: 50%;
     left: 50%;
     gap: 20px;
-    background-color: rgb(235, 235, 235);
+    background-color: #A7CDE0;
     border-radius: 16px;
-    border: 3px aqua solid;
     width: fit-content;
     padding: 92px 80px 93px 60px;
     transform: translate(-50%, -50%);
