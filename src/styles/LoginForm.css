@@ -3,15 +3,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: fixed;
-    top: 50%;
-    left: 50%;
     gap: 20px;
     background-color: #A7CDE0;
     border-radius: 16px;
     width: fit-content;
-    padding: 92px 80px 93px 60px;
-    transform: translate(-50%, -50%);
+    height: fit-content;
+    padding: 45px;
 }
 .formTitle{
     font-size: 48px;
@@ -25,11 +22,14 @@
 }
 .formInfo{
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+    gap: 20px;
+    border: 1px solid transparent;
     a{
         color: black;
-        font-size: 12px;
+        font-size: 16px;
         font-weight: 400;
         text-decoration: none;
         &:hover{
@@ -39,6 +39,11 @@
             text-decoration: underline;
         }
     }
+}
+
+.formInfoError{
+    border: 1px solid;
+    border-color: red;
 }
 
 .inputIcon{
@@ -53,4 +58,27 @@
     position: relative;
     vertical-align: middle;
     width: fit-content;
+}
+
+.formContainer{
+    height: 85vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formInput{
+    padding: 20px 10px;
+    font-size: 24px;
+    font-weight: 400;
+    color: #797979;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    width: 490px;
+    outline: none;
+}
+
+.formInputError{
+    border: 1px solid red;
 }

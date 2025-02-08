@@ -3,9 +3,11 @@ import FormBtn from '../Components/UI/FormButton/FormBtn.jsx'
 import SignIn from '../Components/UI/LoginInput/SignIn.jsx'
 import showPass from '../icons/showPass.svg'
 import hidePass from '../icons/hidePass.svg'
-import '../styles/Form.css'
+import '../styles/LoginForm.css'
 import '../styles/App.css'
 import { getUser } from '../Components/ApiReqests/ApiRequests.jsx'
+import { useNavigate } from 'react-router-dom'
+
 
 
 
@@ -14,37 +16,48 @@ const LoginForm = function(props){
     const [password, setPassword] = useState('')
     const [inputType, setInputType] = useState('password')
     const [iconType, setIconType] = useState(showPass)
-
-
-function passChange(){
-    // eslint-disable-next-line no-cond-assign
-    if(iconType === showPass ){
-        setInputType('text');
-        setIconType(hidePass)
-    } else {
-        setInputType('password');
-        setIconType(showPass)
+    const [formInput, setFormInput] = useState('formInput')
+    function passChange(){
+        // eslint-disable-next-line no-cond-assign
+        if(iconType === showPass ){
+            setInputType('text');
+            setIconType(hidePass)
+        } else {
+            setInputType('password');
+            setIconType(showPass)
+        }
     }
-}
-
+    function handleSignInError(){
+        setFormInput('formInput formInputError')
+    }
+    const navigate = useNavigate()
+    async function signin(email, password){
+        if (await getUser(email, password)){
+            navigate('/')
+        }
+        else {
+            handleSignInError()
+        }
+    }
     return (
-        <form className='login'>
-            <h2 className='formTitle'>Вход</h2>
-            <SignIn placeholder='Адрес электронной почты' value={email} onChange={e => setEmail(e.target.value)} />
-            <label className='huita'>
-                <SignIn type={inputType} placeholder='Пароль' value={password} onChange={e => setPassword(e.target.value)}/>         
-                <img className='inputIcon' onClick={passChange}  src={iconType} alt='passIcon' />
-            </label>
-            <div className='formInfo'>
-                <label>
-                    <input className='formCheckbox'  type='checkbox'/>
-                    Согласен на обработку персональных данных
+        <div className="formContainer">
+            <form className="login">
+                <h2 className="formTitle">Вход</h2>
+                <SignIn className={formInput} placeholder='Адрес электронной почты' value={email} onChange={e => setEmail(e.target.value)} />
+                <label className="huita">
+                    <SignIn className={formInput} type={inputType} placeholder='Пароль' value={password} onChange={e => setPassword(e.target.value)}/>         
+                    <img className="inputIcon" onClick={passChange}  src={iconType} alt='passIcon' />
                 </label>
-                <a href='a'>Забыли пароль?</a>
-
-            </div>
-            <FormBtn onClick={async () => await getUser(email, password)}/>
-        </form>
+                <div className="formInfo">
+                    <label>
+                        <input className="formCheckbox"  type='checkbox'/>
+                        Согласен на обработку персональных данных
+                    </label>
+                    <a href='a'>Забыли пароль?</a>
+                </div>
+                <FormBtn onClick={async () => await signin(email, password)}/>
+            </form>
+        </div>
     )
 }
 

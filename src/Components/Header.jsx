@@ -4,6 +4,7 @@ import '../styles/Header.css'
 import HeaderBtn from './UI/HeaderButton/HeaderBtn'
 import '../styles/App.css'
 import {validate, logOut} from './ApiReqests/ApiRequests'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -17,16 +18,31 @@ const Header = function(){
         }
         valid()
     })
-    console.log(validation)
+    const navigate = useNavigate()
+    function handleProfileClick() {
+        navigate('/profile')
+    }
+    function handleHomeClick() {
+        navigate('/')
+    }
+    function handleSignInClick(){
+        navigate('/signin')
+    }
+    function handleLogOutClick(){
+        logOut()
+        navigate('/signin')
+    }
     if (validation) {
         return (
             <div className='header '>
-                <div className='headerContent container'>
-                    <img src={logo}  alt="logo"/>
+                <div className='headerContent'>
+                    <a href='http://localhost:3000'>
+                        <img src={logo}  alt="logo"/>
+                    </a>
                     <div className='headerBtns'>
-                        <HeaderBtn value='Главная'/>
-                        <HeaderBtn value='Профиль'/>
-                        <HeaderBtn value='Выход' onClick={logOut}/>
+                        <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                        <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
+                        <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
                     </div>
                 </div>
             </div>
@@ -34,11 +50,13 @@ const Header = function(){
     }
     return (
         <div className='header '>
-            <div className='headerContent container'>
-                <img src={logo}  alt="logo"/>
+            <div className='headerContent'>
+                <a href='http://localhost:3000'>
+                    <img src={logo}  alt="logo"/>
+                </a>
                 <div className='headerBtns'>
-                    <HeaderBtn value='Главная'/>
-                    <HeaderBtn value='Вход'/>
+                    <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                    <HeaderBtn value='Вход' onClick={handleSignInClick}/>
                 </div>
             </div>
         </div>
