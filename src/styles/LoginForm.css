@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<<< HEAD:src/styles/LoginForm.css
-=======
->>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
 .login{
     display: flex;
     flex-direction: column;
@@ -10,14 +6,9 @@
     gap: 20px;
     background-color: #A7CDE0;
     border-radius: 16px;
-<<<<<<< HEAD
     width: fit-content;
     height: fit-content;
     padding: 45px;
-=======
-    width: 30vw;
-    height: 45vh;
->>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
 }
 .formTitle{
     font-size: 48px;
@@ -34,29 +25,21 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-<<<<<<< HEAD
     gap: 20px;
     border: 1px solid transparent;
-    a{
-        color: black;
-        font-size: 16px;
-=======
-    border: 1px solid transparent;
-    a{
-        color: black;
-        font-size: 12px;
->>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
-        font-weight: 400;
-        text-decoration: none;
-        &:hover{
-            color: #797979;
-            transition: .3;
-            opacity: .8;
-            text-decoration: underline;
-        }
+}
+.notLox{
+    color: black;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: underline;
+    cursor: pointer;
+    &:hover{
+        color: #797979;
+        transition: .3;
+        opacity: .8;
     }
 }
-
 .formInfoError{
     border: 1px solid;
     border-color: red;
@@ -97,10 +80,14 @@
 
 .formInputError{
     border: 1px solid red;
-<<<<<<< HEAD
 }
-========
->>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8:src/styles/Form.css
-=======
+.frogottenLox{
+    color: black;
+    font-size: 16px;
+    font-weight: 400 ;
+    text-decoration: none;
+    cursor: default;
+    &:hover{
+        opacity: 1;
+    }
 }
->>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8

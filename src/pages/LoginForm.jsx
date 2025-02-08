@@ -17,6 +17,8 @@ const LoginForm = function(props){
     const [inputType, setInputType] = useState('password')
     const [iconType, setIconType] = useState(showPass)
     const [formInput, setFormInput] = useState('formInput')
+    const [forgotPass, setForgotPass] = useState(`Забыли пароль?`)
+    const [passClass, setPassClass] = useState(`notLox`)
     function passChange(){
         // eslint-disable-next-line no-cond-assign
         if(iconType === showPass ){
@@ -26,6 +28,10 @@ const LoginForm = function(props){
             setInputType('password');
             setIconType(showPass)
         }
+    }
+    function ForgotPass() {
+        setForgotPass(`Обратитес к администрации!`);
+        setPassClass(`frogottenLox`);
     }
     function handleSignInError(){
         setFormInput('formInput formInputError')
@@ -53,7 +59,7 @@ const LoginForm = function(props){
                         <input className="formCheckbox"  type='checkbox'/>
                         Согласен на обработку персональных данных
                     </label>
-                    <a href='a'>Забыли пароль?</a>
+                    <p className={passClass} onClick={ForgotPass}>{forgotPass}</p>
                 </div>
                 <FormBtn onClick={async () => await signin(email, password)}/>
             </form>
