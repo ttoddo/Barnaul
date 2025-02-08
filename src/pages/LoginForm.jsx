@@ -19,6 +19,7 @@ const LoginForm = function(props){
     const [formInput, setFormInput] = useState('formInput')
     const [forgotPass, setForgotPass] = useState(`Забыли пароль?`)
     const [passClass, setPassClass] = useState(`notLox`)
+    const [display, setDisplay] = useState(`personalHide`)
     function passChange(){
         // eslint-disable-next-line no-cond-assign
         if(iconType === showPass ){
@@ -29,9 +30,12 @@ const LoginForm = function(props){
             setIconType(showPass)
         }
     }
+    function PersonalData(){
+        setDisplay(`personalShow`)
+    }
     function ForgotPass() {
         setForgotPass(`Обратитес к администрации!`);
-        setPassClass(`frogottenLox`);
+        setPassClass(`forgottenLox`);
     }
     function handleSignInError(){
         setFormInput('formInput formInputError')
@@ -55,10 +59,12 @@ const LoginForm = function(props){
                     <img className="inputIcon" onClick={passChange}  src={iconType} alt='passIcon' />
                 </label>
                 <div className="formInfo">
-                    <label>
+                    <div>
                         <input className="formCheckbox"  type='checkbox'/>
-                        Согласен на обработку персональных данных
-                    </label>
+                        <p>Согласен на обработку <span onClick={PersonalData}>персональных данных</span></p>
+                        
+                    </div>
+                    <p className={display}>А мы и не обрабатываем :)</p>
                     <p className={passClass} onClick={ForgotPass}>{forgotPass}</p>
                 </div>
                 <FormBtn onClick={async () => await signin(email, password)}/>
