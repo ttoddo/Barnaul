@@ -12,8 +12,8 @@ import { useNavigate } from 'react-router-dom'
 
 
 const LoginForm = function(props){
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [_email, setEmail] = useState('')
+    const [_password, setPassword] = useState('')
     const [inputType, setInputType] = useState('password')
     const [iconType, setIconType] = useState(showPass)
     const [formInput, setFormInput] = useState('formInput')
@@ -40,6 +40,7 @@ const LoginForm = function(props){
     async function signin(email, password){
         if (await getUser(email, password)){
             navigate('/')
+            window.location.reload()
         }
         else {
             handleSignInError()
@@ -49,9 +50,9 @@ const LoginForm = function(props){
         <div className="formContainer">
             <form className="login">
                 <h2 className="formTitle">Вход</h2>
-                <SignIn className={formInput} placeholder='Адрес электронной почты' value={email} onChange={e => setEmail(e.target.value)} />
+                <SignIn className={formInput} placeholder='Адрес электронной почты' value={_email} onChange={e => setEmail(e.target.value)} />
                 <label className="huita">
-                    <SignIn className={formInput} type={inputType} placeholder='Пароль' value={password} onChange={e => setPassword(e.target.value)}/>         
+                    <SignIn className={formInput} type={inputType} placeholder='Пароль' value={_password} onChange={e => setPassword(e.target.value)}/>         
                     <img className="inputIcon" onClick={passChange}  src={iconType} alt='passIcon' />
                 </label>
                 <div className="formInfo">
@@ -61,7 +62,7 @@ const LoginForm = function(props){
                     </label>
                     <p className={passClass} onClick={ForgotPass}>{forgotPass}</p>
                 </div>
-                <FormBtn onClick={async () => await signin(email, password)}/>
+                <FormBtn onClick={async () => await signin(_email, _password)}/>
             </form>
         </div>
     )

@@ -28,6 +28,42 @@ export const getUser = async function (email, password){
     }
 }
 
+export const userInfo = async function (token) {
+    var userInfoSettings = JSON.parse(JSON.stringify(settings))
+    userInfoSettings.method = 'GET'
+    userInfoSettings.headers['Authorization'] = 'Bearer ' + token
+    try {
+      const res = await fetch(api + '/profile', userInfoSettings)
+      const data = await res.json()
+      if (data.id){
+        return data
+      } else return false
+    } catch{
+      return false
+    }
+} 
+
+export const getBreakdowns = async function (token){
+    var breakdownsSettings = JSON.parse(JSON.stringify(settings))
+    breakdownsSettings.method = 'GET'
+    breakdownsSettings.headers['Authorization'] = 'Bearer ' + token
+    try {
+        const res = await fetch(api + '/breakdown/get-all', breakdownsSettings)
+        const data = await res.json()
+        if (data.breakdowns[0]){
+            console.log('Breakdowns Seek Success')
+            return data
+        } else{
+            console.log('Breakdowns Error')
+            return false
+        }
+    } catch {
+        console.log('Breakdowns Error')
+        return false
+    }
+
+}
+
 export const validate = async function (token){
     var validateSettings = JSON.parse(JSON.stringify(settings))
     validateSettings.method = 'GET'
@@ -50,6 +86,7 @@ export const validate = async function (token){
 
 export const logOut = function (){
     localStorage.removeItem('TOKEN')
+    window.location.reload()
     console.log('LogOut Success')
     return
 }

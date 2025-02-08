@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import ProfileInfo from '../Components/ProfileInfo'
 import '../styles/Profile.css'
 import '../styles/App.css'
@@ -8,7 +8,7 @@ import ProfileStatistic from '../Components/ProfileStatistic'
 
 
 
-const Profile = (props) => {
+const Profile = function(props){
   return (
     <div className='profileBlock'>
       <ProfileInfo/>
