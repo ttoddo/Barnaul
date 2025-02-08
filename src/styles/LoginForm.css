@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+<<<<<<<< HEAD:src/styles/LoginForm.css
+=======
+>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
 .login{
     display: flex;
     flex-direction: column;
@@ -6,9 +10,14 @@
     gap: 20px;
     background-color: #A7CDE0;
     border-radius: 16px;
+<<<<<<< HEAD
     width: fit-content;
     height: fit-content;
     padding: 45px;
+=======
+    width: 30vw;
+    height: 45vh;
+>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
 }
 .formTitle{
     font-size: 48px;
@@ -25,11 +34,18 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+<<<<<<< HEAD
     gap: 20px;
     border: 1px solid transparent;
     a{
         color: black;
         font-size: 16px;
+=======
+    border: 1px solid transparent;
+    a{
+        color: black;
+        font-size: 12px;
+>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
         font-weight: 400;
         text-decoration: none;
         &:hover{
@@ -81,4 +97,10 @@
 
 .formInputError{
     border: 1px solid red;
+<<<<<<< HEAD
 }
+========
+>>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8:src/styles/Form.css
+=======
+}
+>>>>>>> a9aba66be58f97c6790cad0a472801d19ea976b8
