@@ -1,4 +1,4 @@
-const api = "http://138.124.127.43:8081/"
+const api = "https://bgitusec.online"
 const settings = {
   method : 'POST',
   headers: {
@@ -7,6 +7,8 @@ const settings = {
   }
 }
 
+
+
 export const getUser = async function (email, password){
     var getUserSettings = JSON.parse(JSON.stringify(settings))
     getUserSettings.body = JSON.stringify(
@@ -14,15 +16,15 @@ export const getUser = async function (email, password){
         password: password})
     console.log(getUserSettings)
     try {
-      const res = await fetch(api + 'auth/sign-in', getUserSettings)
+      const res = await fetch(api + '/auth/sign-in', getUserSettings)
       const data = await res.json()
       console.log(data)
       console.log('SignIn Success')
       localStorage.setItem('TOKEN', data.token)
-      window.location.reload()
-      return data
+      return true
     } catch {
-      return console.log("SignIn Error")
+      console.log("SignIn Error")
+      return false
     }
 }
 
@@ -31,7 +33,7 @@ export const validate = async function (token){
     validateSettings.method = 'GET'
     validateSettings.headers['Authorization'] = 'Bearer ' + token
     try {
-        const res = await fetch(api + 'auth/valid', validateSettings)
+        const res = await fetch(api + '/auth/valid', validateSettings)
         const data = await res.json()
         if (data.isValid){
             console.log('Validate Success')
@@ -49,6 +51,5 @@ export const validate = async function (token){
 export const logOut = function (){
     localStorage.removeItem('TOKEN')
     console.log('LogOut Success')
-    window.location.reload()
     return
 }
