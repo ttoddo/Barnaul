@@ -15,12 +15,12 @@ const Header = function(){
     const [validTried, setValidTried] = useState(false)
     useEffect(() => {
         const valid = async () => {
-            var res = await validate(localStorage.getItem('TOKEN'))
+            let res = await validate(localStorage.getItem('TOKEN'))
             setValidation(res)
             setValidTried(true)
         } 
         const getUserInfo = async () => {
-            var res = await userInfo(localStorage.getItem('TOKEN'))
+            let res = await userInfo(localStorage.getItem('TOKEN'))
             setUserInfo(res)
             }
         valid()

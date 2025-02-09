@@ -7,20 +7,20 @@ const ProfileDataReport = function(props) {
   const [userInformation, setUserInfo] = useState()
   useEffect(() => {
       async function brbrbr(){
-        var breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
+        let breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
         setBreakdowns(breakdowns)
       }
       async function getUserInfo() {
-        var res = await userInfo(localStorage.getItem('TOKEN'))
+        let res = await userInfo(localStorage.getItem('TOKEN'))
         setUserInfo(res)
         }
       getUserInfo() 
       brbrbr()
   }, [])
-  var solvedCount = 0
-  var breakdownCount = 0
+  let solvedCount = 0
+  let breakdownCount = 0
   if (breakdown && userInformation){
-    for (var i = 0; i < breakdown.breakdowns.length; i++){
+    for (let i = 0; i < breakdown.breakdowns.length; i++){
       if (breakdown.breakdowns[i].userId === userInformation.id){
         breakdownCount++
         if (breakdown.breakdowns[i].isSolved){solvedCount++}

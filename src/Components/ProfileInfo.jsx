@@ -8,7 +8,7 @@ const ProfileInfo = function(props) {
   const [userInformation, setUserInfo] = useState()
   useEffect(() => {
       async function getUserInfo() {
-          var res = await userInfo(localStorage.getItem('TOKEN'))
+          let res = await userInfo(localStorage.getItem('TOKEN'))
           setUserInfo(res)
           }
       getUserInfo()

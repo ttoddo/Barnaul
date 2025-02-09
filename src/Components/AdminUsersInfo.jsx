@@ -8,7 +8,7 @@ const AdminUsersInfo =function(props) {
     const [finalUsers, setFinalUsers] = useState([])
     useEffect(() => {
       async function getUsersInfo(){
-        var res = await getUsers(localStorage.getItem('TOKEN'))
+        let res = await getUsers(localStorage.getItem('TOKEN'))
         setUsersInfo(res.users)
       }
       getUsersInfo()
@@ -19,9 +19,9 @@ const AdminUsersInfo =function(props) {
 
     if (users){
       if (users.length !== finalUsers.length) {
-        var tempUsers = []
-        for (var i=0; i < users.length; i++){
-          var _role = ''
+        let tempUsers = []
+        for (let i=0; i < users.length; i++){
+          let _role = ''
           switch (users[i].role){
             case 'ROLE_ADMIN':
               _role = 'Администартор'

@@ -9,11 +9,11 @@ const ProfileStatistic = function(props) {
     const [error, setError] = useState([])
     useEffect(() => {
         async function getUserInfo() {
-            var res = await userInfo(localStorage.getItem('TOKEN'))
+            let res = await userInfo(localStorage.getItem('TOKEN'))
             setUserInfo(res)
         }
         async function brbrbr(){
-          var breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
+          let breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
           setBreakdowns(breakdowns)
         }
         getUserInfo()
@@ -23,21 +23,22 @@ const ProfileStatistic = function(props) {
       return b.level - a.level;
     }
     if (breakdown && userInformation){
-      var error_count = 0;
-      for (var i = 0; i < breakdown.breakdowns.length; i++){
+      let error_count = 0;
+      for (let i = 0; i < breakdown.breakdowns.length; i++){
         if (breakdown.breakdowns[i].userId === userInformation.id){
           error_count++
         }
       }
       if (error.length !== error_count){
-        var tempError = []
-        for ( i = 0; i < breakdown.breakdowns.length; i++){
+        let tempError = []
+        for (let i = 0; i < breakdown.breakdowns.length; i++){
           if (breakdown.breakdowns[i].userId === userInformation.id){
-            var _color = ''
-            var level = breakdown.breakdowns[i].level
+            let _color = ''
+            let _status
+            let level = breakdown.breakdowns[i].level
             if (breakdown.breakdowns[i].isSolved){
-              var _status = 'Solved'
-            } else _status = 'Not Solved'
+               _status = 'Solved'
+            } else {_status = 'Not Solved'}
             if (_status === 'Solved') {
               level = 0
             } else {}

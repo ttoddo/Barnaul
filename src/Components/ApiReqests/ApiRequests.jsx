@@ -10,7 +10,7 @@ const settings = {
 
 
 export const editUser = async function (id, username, email, password, token){
-    var editUserSettings = JSON.parse(JSON.stringify(settings))
+    let editUserSettings = JSON.parse(JSON.stringify(settings))
     editUserSettings.method = 'PUT'
     editUserSettings.headers['Authorization'] = 'Bearer ' + token
     editUserSettings.body = JSON.stringify(
@@ -37,7 +37,7 @@ export const editUser = async function (id, username, email, password, token){
 }
 
 export const removeUser = async function (id, token) {
-    var removeUserSettings = JSON.parse(JSON.stringify(settings))
+    let removeUserSettings = JSON.parse(JSON.stringify(settings))
     removeUserSettings.method = 'DELETE'
     removeUserSettings.headers['Authorization'] = 'Bearer ' + token
     try{
@@ -56,7 +56,7 @@ export const removeUser = async function (id, token) {
 }
 
 export const getUser = async function (email, password){
-    var getUserSettings = JSON.parse(JSON.stringify(settings))
+    let getUserSettings = JSON.parse(JSON.stringify(settings))
     getUserSettings.body = JSON.stringify(
         {username: email,
         password: password})
@@ -73,7 +73,7 @@ export const getUser = async function (email, password){
 }
 
 export const addUser = async function (username, email, password, role, token) {
-    var addUserSettings = JSON.parse(JSON.stringify(settings))
+    let addUserSettings = JSON.parse(JSON.stringify(settings))
     addUserSettings.method = 'POST'
     addUserSettings.headers['Authorization'] = 'Bearer ' + token
     addUserSettings.body = JSON.stringify(
@@ -96,7 +96,7 @@ export const addUser = async function (username, email, password, role, token) {
 }
 
 export const userInfo = async function (token) {
-    var userInfoSettings = JSON.parse(JSON.stringify(settings))
+    let userInfoSettings = JSON.parse(JSON.stringify(settings))
     userInfoSettings.method = 'GET'
     userInfoSettings.headers['Authorization'] = 'Bearer ' + token
     try {
@@ -111,7 +111,7 @@ export const userInfo = async function (token) {
 } 
 
 export const getBreakdowns = async function (token){
-    var breakdownsSettings = JSON.parse(JSON.stringify(settings))
+    let breakdownsSettings = JSON.parse(JSON.stringify(settings))
     breakdownsSettings.method = 'GET'
     breakdownsSettings.headers['Authorization'] = 'Bearer ' + token
     try {
@@ -132,7 +132,7 @@ export const getBreakdowns = async function (token){
 }
 
 export const validate = async function (token){
-    var validateSettings = JSON.parse(JSON.stringify(settings))
+    let validateSettings = JSON.parse(JSON.stringify(settings))
     validateSettings.method = 'GET'
     validateSettings.headers['Authorization'] = 'Bearer ' + token
     try {
@@ -152,7 +152,7 @@ export const validate = async function (token){
 }
 
 export const getUsers = async function (token) {
-    var getUsersSettings = JSON.parse(JSON.stringify(settings))
+    let getUsersSettings = JSON.parse(JSON.stringify(settings))
     getUsersSettings.method = 'GET'
     getUsersSettings.headers['Authorization'] = 'Bearer ' + token
     try {

@@ -13,7 +13,7 @@ const AdminCreateUser =function(props) {
     const [inputStyle, setInputStyle] = useState(styles.adminInput)
     const [color, setColor] = useState('transparent')
     async function handleAddUser(name, email, password, role, token) {
-      var admin = ''
+      let admin = ''
       if (role){
         admin = 'ROLE_ADMIN';
       } else admin = 'ROLE_USER';
