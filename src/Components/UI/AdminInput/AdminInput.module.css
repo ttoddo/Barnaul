@@ -7,6 +7,19 @@
     cursor: pointer;
     background-color: #C4D8E1;
     border-radius: 12px;
-    border: none;
+    border: 2px solid transparent;
+    outline: none;
+}
+
+.adminInputError{
+    width: 100%;
+    padding: 10px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #797979;
+    cursor: pointer;
+    background-color: #C4D8E1;
+    border-radius: 12px;
+    border: 2px solid red;
     outline: none;
 }
