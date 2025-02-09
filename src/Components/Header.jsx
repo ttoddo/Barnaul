@@ -14,9 +14,6 @@ const Header = function(){
     const [userInformation, setUserInfo] = useState()
     const [validTried, setValidTried] = useState(false)
     useEffect(() => {
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-          }
         const valid = async () => {
             var res = await validate(localStorage.getItem('TOKEN'))
             setValidation(res)
@@ -24,7 +21,6 @@ const Header = function(){
         } 
         const getUserInfo = async () => {
             var res = await userInfo(localStorage.getItem('TOKEN'))
-            console.log(res)
             setUserInfo(res)
             }
         valid()
@@ -49,14 +45,11 @@ const Header = function(){
         navigate('/admin')
     }
     if (validTried && userInformation) {
-        console.log(userInformation)
         if (userInformation.role === 'ROLE_ADMIN'){
             return (
                 <div className='header '>
                     <div className='headerContent'>
-                        <a href='http://localhost:3000'>
-                            <img src={logo}  alt="logo"/>
-                        </a>
+                        <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
                         <div className='headerBtns'>
                             <HeaderBtn value='Главная' onClick={handleHomeClick}/>
                             <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
@@ -66,14 +59,27 @@ const Header = function(){
                     </div>
                 </div>
             )}
+        else {
+            return (
+                <div className='header '>
+                    <div className='headerContent'>
+                        <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
+                        <div className='headerBtns'>
+                            <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                            <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
+                            <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        
     }
     else if (validTried && !userInformation){
         return (
             <div className='header '>
                 <div className='headerContent'>
-                    <a href='http://localhost:3000'>
-                        <img src={logo}  alt="logo"/>
-                    </a>
+                    <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
                     <div className='headerBtns'>
                         <HeaderBtn value='Главная' onClick={handleHomeClick}/>
                         <HeaderBtn value='Вход' onClick={handleSignInClick}/>
@@ -81,7 +87,7 @@ const Header = function(){
                 </div>
             </div>
         )
-    } else{}
+    } else{console.log(validation)}
 }
 
 export default Header

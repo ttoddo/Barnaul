@@ -10,7 +10,6 @@ const ProfileInfo = function(props) {
       async function getUserInfo() {
           var res = await userInfo(localStorage.getItem('TOKEN'))
           setUserInfo(res)
-          console.log(res)
           }
       getUserInfo()
   }, [])
