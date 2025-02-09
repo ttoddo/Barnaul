@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import ProfileInfo from '../Components/ProfileInfo'
 import '../styles/Profile.css'
 import '../styles/App.css'

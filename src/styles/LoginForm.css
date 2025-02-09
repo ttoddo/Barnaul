@@ -20,6 +20,10 @@
     accent-color: rgba(146, 201, 252, 0.678);
     margin-right: 5px;
 }
+.formCheckboxError{
+    color: red;
+}
+
 .formInfo{
     display: flex;
     flex-direction: column;

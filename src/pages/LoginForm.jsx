@@ -20,6 +20,8 @@ const LoginForm = function(props){
     const [forgotPass, setForgotPass] = useState(`Забыли пароль?`)
     const [passClass, setPassClass] = useState(`notLox`)
     const [display, setDisplay] = useState(`personalHide`)
+    const [check, setCheck] = useState('')
+    const [checked, setChecked] = useState(false)
     function passChange(){
         // eslint-disable-next-line no-cond-assign
         if(iconType === showPass ){
@@ -42,13 +44,15 @@ const LoginForm = function(props){
     }
     const navigate = useNavigate()
     async function signin(email, password){
-        if (await getUser(email, password)){
-            navigate('/')
-            window.location.reload()
-        }
-        else {
-            handleSignInError()
-        }
+        if (checked){
+            if (await getUser(email, password)){
+                navigate('/')
+                window.location.reload()
+            }
+            else {
+                handleSignInError()
+            }
+        } else {setCheck('formCheckboxError')}
     }
     return (
         <div className="formContainer">
@@ -61,8 +65,8 @@ const LoginForm = function(props){
                 </label>
                 <div className="formInfo">
                     <div>
-                        <input className="formCheckbox"  type='checkbox'/>
-                        <p>Согласен на обработку <span onClick={PersonalData}>персональных данных</span></p>
+                        <input className="formCheckbox" value={checked} onChange={setChecked}  type='checkbox'/>
+                        <p className={check}>Согласен на обработку <span onClick={PersonalData}>персональных данных</span></p>
                         
                     </div>
                     <p className={display}>А мы и не обрабатываем :)</p>

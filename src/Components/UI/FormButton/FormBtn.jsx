@@ -1,6 +1,5 @@
 import React from 'react'
 import styles from './FormBtn.module.css'
-import {getUser} from '../../ApiReqests/ApiRequests'
 
 const FormBtn = function(props){
     return (
