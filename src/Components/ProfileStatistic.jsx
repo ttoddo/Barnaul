@@ -1,28 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import '../styles/Profile.css'
 import ErrorBlock from './UI/ErrorBlock/ErrorBlck'
+import ErrorBlockSkeleton from './UI/ErrorBlock/ErrorBlckSkeleton'
 import { getBreakdowns, userInfo } from './ApiReqests/ApiRequests'
 
 const ProfileStatistic = function(props) {
+    const [isLoading, setIsLoading] = useState(true) // Здесь состояние загрузки, которое мы меняем после выполнения запросов
     const [userInformation, setUserInfo] = useState()
     const [breakdown, setBreakdowns] = useState()
     const [error, setError] = useState([])
-    useEffect(() => {
-        async function getUserInfo() {
-            let res = await userInfo(localStorage.getItem('TOKEN'))
-            setUserInfo(res)
-        }
-        async function brbrbr(){
-          let breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
-          setBreakdowns(breakdowns)
-        }
-        getUserInfo()
-        brbrbr()
-    }, [])
     function byLevel(a, b){
       return b.level - a.level;
     }
-    if (breakdown && userInformation){
+
+    useEffect(() => { // ВСЕ ИЗМЕНЕНИЯ СМОТРИ В ErrorBlock/ErrorBlckSkeleton И ВСЁ ОСТАЛЬНОЕ ДЕЛАЕМ ТАКЖЕ
+        async function getUserAndBreakdowns() { // Здесь я объединил две функции, которые получают инфу о пользователе и ошибках, так надо делать для одного изменения состояния загрузки.
+            function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            } // Эту функцию удалишь, как разберешься, как это работает, либо можно взять на вооружение для тестов скелетов, оно просто вместо записи сраузу, ждет время в миллисекундах. 
+            let token = localStorage.getItem('TOKEN') // Наш токен, который потом перенесем в cookies
+            let user = await userInfo(token)
+            let breakdowns = await getBreakdowns(token) // Два запроса
+
+            setUserInfo(user)
+            setBreakdowns(breakdowns) // Запись запросов в состояния
+            await sleep(10000) // Это удалишь, как разберешься, как это работает
+            setIsLoading(false) // Тут мы меняем состояние загрузки == загрузка закончилась. Все изменения состояний проводят обновление вкладки, но так как прошлые set функции изменялись,
+                                // но isLoading был false, мы не попадали во вторую часть кода только с данными пользователя.
+        }
+        getUserAndBreakdowns()
+    }, [])
+
+    if (isLoading){ // Проверка состояния загрузки
+      return (
+        <div className='profileStat'>
+          <ErrorBlockSkeleton key={0}></ErrorBlockSkeleton> 
+          <ErrorBlockSkeleton key={1}></ErrorBlockSkeleton>
+        </div>
+      ) // Тут я навалил грязи с ErrorBlock, но выглядит оно нормально
+    } else { // Сюда попадем только в случае, если загрузка кончилась 
       let error_count = 0;
       for (let i = 0; i < breakdown.breakdowns.length; i++){
         if (breakdown.breakdowns[i].userId === userInformation.id){
@@ -72,9 +88,8 @@ const ProfileStatistic = function(props) {
             {error.map(error => 
                 <ErrorBlock error={error} key={error.key}/>
             )}
-            
         </div>
-      )
+      ) // А тут выводится уже нормальный ErrorBlock
     }
 }
 

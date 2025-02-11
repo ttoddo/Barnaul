@@ -72,7 +72,7 @@ const LoginForm = function(props){
                     <p className={display}>А мы и не обрабатываем :)</p>
                     <p className={passClass} onClick={ForgotPass}>{forgotPass}</p>
                 </div>
-                <FormBtn onClick={async () => await signin(_email, _password)}/>
+                <FormBtn value='Войти' onClick={async () => await signin(_email, _password)}/>
             </form>
         </div>
     )

@@ -44,6 +44,9 @@ const Header = function(){
     function handleAdminClick(){
         navigate('/admin')
     }
+    function handleEditorClick(){
+        navigate('/editor')
+    }
     if (validTried && userInformation) {
         if (userInformation.role === 'ROLE_ADMIN'){
             return (
@@ -52,6 +55,7 @@ const Header = function(){
                         <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
                         <div className='headerBtns'>
                             <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                            <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
                             <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
                             <HeaderBtn value='Админка' onClick={handleAdminClick}/>
                             <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
@@ -66,6 +70,7 @@ const Header = function(){
                         <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
                         <div className='headerBtns'>
                             <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                            <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
                             <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
                             <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
                         </div>
