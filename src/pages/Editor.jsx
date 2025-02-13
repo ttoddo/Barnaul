@@ -1,180 +1,62 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Layer, Rect, Stage, Text } from "react-konva";
 
-// Сделать новую Room, как было в запросе у Дани, сделать курсоры, разобраться со скейлом, 
-
-
-
-class University {
-    constructor(worldX, worldY, width, height){
-      this.worldX = worldX; 
-      this.worldY = worldY;
-      this.width = width;
-      this.height = height;
-    }
-
-    drawRect(ctx, centerX, centerY, width, height){
-      ctx.fillRect(centerX-width/2, centerY-height/2, width, height)
-    }
-
-    drawGrid(ctx, centerX, centerY, width, height){
-      for (let x = centerX-width/2; x <= centerX+width/2; x+=50){
-        for (let y = centerY+height/2; y >= centerY-height/2; y-=50)
-          this.drawRect(ctx, x, y, 2, 2)
-      }
-    }
-
-    draw(ctx, offsetX, offsetY) {
-      const xCoord = this.worldX + offsetX;
-      const yCoord = this.worldY + offsetY;
-      ctx.fillStyle = "lightblue"
-      this.drawRect(ctx, xCoord, yCoord, this.width, this.height)
-      ctx.fillStyle = "black"
-      this.drawRect(ctx, 0, 0, 5, 5)
-      this.drawGrid(ctx, 0, 0, this.width, this.height)
-    }
-}
 
 class Room {
-    constructor(id, worldX, worldY, width, height) {
-      this.id = id;
-      this.worldX = worldX; 
-      this.worldY = worldY;
-      this.width = width;
-      this.height = height;
+    constructor(id, centerX, centerY, width, height){
+        this.id = id
+        this.centerX = centerX
+        this.centerY = centerY
+        this.width = width
+        this.height = height
+    } 
+    Id(){
+        return this.id
     }
-  
-    draw(ctx, offsetX, offsetY) {
-      const x = this.worldX + offsetX;
-      const y = this.worldY + offsetY;
-  
-      ctx.fillStyle = "blue";
-      ctx.fillRect(x, y, this.width, this.height);
-      ctx.strokeStyle = "black";
-      ctx.strokeRect(x, y, this.width, this.height);
-      ctx.fillStyle = "black";
-      ctx.fillText(`Ауд. ${this.id}`, x + 10, y + 20);
+    X(){
+        return this.centerX - this.width/2
     }
-  
-    isClicked(mouseX, mouseY, offsetX, offsetY) {
-      const x = this.worldX + offsetX;
-      const y = this.worldY + offsetY;
-      return mouseX >= x && mouseX <= x + this.width && mouseY >= y && mouseY <= y + this.height;
+    Y(){
+        return this.centerY - this.height/2
     }
+    Width(){
+        return this.width
+    }
+    Height(){
+        return this.height
+    }
+
 }
 
-const PanningCanvas = ({ width, height }) => {
-  const canvasRef = useRef(null);
-  const [currentCursor, setCurrentCursor] = useState('pointer')
-  const [rooms] = useState([
-    new Room(101, 100, 100, 200, 150),
-    new Room(102, 400, 100, 200, 150),
-    new Room(103, 100, 400, 200, 150),
-  ]);
-  const [University1] = useState([new University(0, 0, 1000, 1000)])
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(canvas.width, canvas.height);
-      ctx.scale(scale, scale);
-      ctx.translate(-canvas.width + offset.x, -canvas.height + offset.y);
-      ctx.font = "16px Arial";
-      console.log(ctx)
-      University1[0].draw(ctx, 0, 0)
-      rooms.forEach((room) => room.draw(ctx, 0, 0));
-      
-      ctx.restore();
-    };
-    draw();
-  }, [width, height, offset, scale, rooms]);
-
-  const handleMouseDown = (event) => {
-    if (event.button !== 1) return; 
-    console.log(currentCursor)
-    setIsDragging(true);
-    setLastMousePos({ x: event.clientX, y: event.clientY });
-  };
-
-  const handleMouseMove = (event) => {
-    if (isDragging){
-      const dx = event.clientX - lastMousePos.x;
-      const dy = event.clientY - lastMousePos.y;
-      setOffset((prev) => ({ x: prev.x + dx / scale, y: prev.y + dy / scale }));
-      setLastMousePos({ x: event.clientX, y: event.clientY });
-      let canvas = canvasRef.current
-      canvas.style.cursor='grab'
-
-
-    }
-    else {
-      let canvas = canvasRef.current
-      const rect = canvas.getBoundingClientRect();
-      let offsetX = rect.left;
-      let offsetY = rect.top;
-      const mouseX = parseInt(event.clientX - offsetX);
-      const mouseY = parseInt(event.clientY - offsetY);
-
-    }
-
-
-  };
-
-  const handleMouseUp = () => {
-    let canvas = canvasRef.current
-    canvas.style.cursor = 'default'
-    setIsDragging(false);
-  };
-
-  const handleWheel = (event) => {
-    event.preventDefault();
-    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-    setScale((prevScale) => Math.max(0.5, Math.min(2, prevScale * zoomFactor)));
-  };
-
-  const handleClick = (event) => {
-    let canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect();
-    let offsetX = rect.left;
-    let offsetY = rect.top;
-    const mouseX = parseInt(event.clientX - offsetX);
-    const mouseY = parseInt(event.clientY - offsetY);
-    
-    const clickedRoom = rooms.find((room) => room.isClicked(mouseX, mouseY, 0, 0));
-
-    if (clickedRoom) {
-      alert(`Открываем аудиторию ${clickedRoom.id}`);
-    }
-  };
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onWheel={handleWheel}
-      onClick={handleClick}
-      style={{ border: "1px solid black", cursor: {currentCursor} }}
-    />
-  );
-};
 
 const Editor = () => {
-  const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth , height: window.innerHeight });
-
-  return <PanningCanvas width={canvasSize.width} height={canvasSize.height * 0.85} />;
+    const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth , height: window.innerHeight });
+    const [rooms, setRooms] = useState([
+        new Room(1, 100, 0, 200, 100),
+        new Room(2, 100, 300, 150, 300),
+        new Room(3, 100, 800, 300, 100)
+    ])
+    console.log(rooms[0].Id())
+    return (
+        <Stage width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={1} scaleY={1} draggable={true}>
+            <Layer>
+                <Text text={"Я сосал меня ебали"}></Text>
+                {rooms.map((room) => (
+                    <Rect
+                        key={room.Id()}
+                        id={String(room.Id())}
+                        X={room.X()}
+                        Y={room.Y()}
+                        width={room.Width()}
+                        height={room.Height()}
+                        fill="red"
+                    />
+                    
+                    
+                ))}
+            </Layer>
+        </Stage>
+    )
 };
 
 export default Editor
