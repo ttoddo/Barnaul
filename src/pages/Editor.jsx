@@ -12,28 +12,28 @@ class Room {
         this.height = height
         this.color = color
     } 
-    Key(){
+    getKey(){
         return this.key
     }
-    Id(){
+    getId(){
         return this.id
     }
-    X(){
+    getX(){
         return this.x
     }
-    Y(){
+    getY(){
         return this.y
     }
-    Width(){
+    getWidth(){
         return this.width
     }
-    Height(){
+    getHeight(){
         return this.height
     }
-    Color(){
+    getColor(){
         return this.color
     }
-    Drag(){
+    getDrag(){
         return this.drag
     }
     setX(x){
@@ -48,31 +48,58 @@ class Room {
     setDrag(drag){
         this.drag = drag
     }
+}
 
+class Shadow extends Room{
+    constructor(room){
+        super(room.getKey(), room.getId() + '_shadow', room.getX(), room.getY(), room.getWidth(), room.getHeight(), room.getColor())
+    }
 }
 
 
 const Editor = () => {
-    const [snapSize, setSnapSize] = useState(30)
+    const [snapSize, setSnapSize] = useState(50)
     const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth , height: window.innerHeight });
     const [gridlines, setGridLines] = useState([])
     const [scale, setScale] = useState(1)
     const [rooms, setRooms] = useState([])
+    const [shadows, setShadows] = useState([])
     useEffect(() => {
-      setRooms([
-        new Room(1, '1', 100, 0, snapSize*4, snapSize*2, 'red'),
-        new Room(2, '2', 100, 300, snapSize*4, snapSize*6, 'red'),
-        new Room(3, '3', 100, 800, snapSize*6, snapSize*2, 'red'),
-      ])
-      let gridlinesTemp = []
-      for (let x = 0; x <= canvasSize.width / snapSize; x++){
-        gridlinesTemp = [...gridlinesTemp, {key: x, points: [Math.round(x * snapSize), 0, Math.round(x * snapSize), canvasSize.height]}]
-      }
-      for (let y = 0; y <= canvasSize.height / snapSize; y++){
-        gridlinesTemp = [...gridlinesTemp, {key: y+100, points: [0, Math.round(y * snapSize), canvasSize.width, Math.round(y * snapSize)]}]
-      }
-      setGridLines(gridlinesTemp)
-    }, [])
+        setRooms([
+            new Room('1room', '1room', 100, 0, snapSize*4, snapSize*2, 'red'),
+            new Room('2room', '2room', 100, 300, snapSize*4, snapSize*6, 'red'),
+            new Room('3room', '3room', 100, 800, snapSize*6, snapSize*2, 'red'),
+        ])
+        let gridlinesTemp = []
+        for (let x = 0; x <= canvasSize.width / snapSize; x++){
+            gridlinesTemp = [...gridlinesTemp, {key: x+'gridLineX', points: [Math.round(x * snapSize), 0, Math.round(x * snapSize), canvasSize.height]}]
+        }
+        for (let y = 0; y <= canvasSize.height / snapSize; y++){
+            gridlinesTemp = [...gridlinesTemp, {key: y+'gridLineY', points: [0, Math.round(y * snapSize), canvasSize.width, Math.round(y * snapSize)]}]
+        }
+        setGridLines(gridlinesTemp)
+    }, [canvasSize.height, canvasSize.width, snapSize])
+    useEffect(() => {
+        setShadows(rooms.map((room) =>{
+            return new Shadow(room)
+        }))
+    }, [rooms])
+
+    const handleDragMove = (e) => {
+        const id = e.target.id() + '_shadow'
+        setShadows(
+            shadows.map((shadow) => {
+                if (String(shadow.getId()) === id){
+                    let x = Math.round(e.target.x()/snapSize) * snapSize
+                    let y = Math.round(e.target.y()/snapSize) * snapSize
+                    shadow.setX(x)
+                    shadow.setY(y)
+                }
+                return shadow
+            })
+        )
+        
+    }
     const handleDragStart = (e) => {
         const id = e.target.id()
         setRooms(
@@ -85,15 +112,15 @@ const Editor = () => {
         const id = e.target.id()
         setRooms(
             rooms.map((room) => {
-                if (String(room.Id()) === id){
+                if (String(room.getId()) === id){
                     console.log('Прокнуло')
                     let x = Math.round(e.target.x()/snapSize) * snapSize
                     let y = Math.round(e.target.y()/snapSize) * snapSize
                     room.setX(x)
                     room.setY(y)
                     e.target.to({
-                      x: x,
-                      y: y
+                        x: x,
+                        y: y
                     })
                 }
                 return room
@@ -111,55 +138,56 @@ const Editor = () => {
         const id = e.target.id()
         setRooms(
             rooms.map((room) => {
-                if (String(room.Id()) === id) {
-                    room.setColor(room.Color() === 'red' ? 'blue' : 'red')
+                if (String(room.getId()) === id) {
+                    room.setColor(room.getColor() === 'red' ? 'blue' : 'red')
                 }
                 return room
             })
         )
     }
-
     return (
         <Stage key='GigaStage' id='0' onWheel={handleWheel} width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={scale} scaleY={scale} draggable={true}>
             <Layer key='GridLayer'>
-              {gridlines.map((line) =>(
-                <Line
-                key={line.key + ' line'}
-                points={line.points}
-                stroke="#ddd"
-                strokeWidth={2}
-                />
-              ))}
+                {gridlines.map((line) =>(
+                    <Line
+                        key={line.key + ' line'}
+                        points={line.points}
+                        stroke="#ddd"
+                        strokeWidth={2}
+                    />
+                ))}
             </Layer>
             <Layer>
-              {rooms.map((room) => (
+                {shadows.map((shadow) => (
                 <Rect
-                  key={room.Key()+1000}
-                  id={room.Id()+'_shadow'}
-                  X={room.X()}
-                  Y={room.Y()}
-                  width={room.Width()}
-                  height={room.Height()}
-                  fill={room.Color()}
-                  opacity={0.45}
+                    key={shadow.getKey()+1000}
+                    id={shadow.getId()+'_shadow'}
+                    X={shadow.getX()}
+                    Y={shadow.getY()}
+                    width={shadow.getWidth()}
+                    height={shadow.getHeight()}
+                    fill={shadow.getColor()}
+                    cornerRadius={15}
+                    opacity={0.45}
                 />
-              ))}
-              {rooms.map((room) => (
-                  <Rect
-                      key={room.Key()}
-                      id={room.Id()}
-                      X={room.X()}
-                      Y={room.Y()} 
-                      width={room.Width()}
-                      height={room.Height()}
-                      fill={room.Color()}
-                      draggable={true}
-                      onClick={handleClick}
-                      onDragStart={handleDragStart}
-                      onDragEnd={handleDragEnd}
-                  />
-              ))}
-
+            ))}
+            {rooms.map((room) => (
+                <Rect
+                    key={room.getKey()}
+                    id={room.getId()}
+                    X={room.getX()}
+                    Y={room.getY()} 
+                    width={room.getWidth()}
+                    height={room.getHeight()}
+                    fill={room.getColor()}
+                    cornerRadius={15}
+                    draggable={true}
+                    onClick={handleClick}
+                    onDragMove={handleDragMove}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                />
+            ))}
             </Layer>     
         </Stage>
     )
