@@ -1,57 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layer, Line, Rect, Stage, Text, Transformer } from "react-konva";
 
-
-class Room {
-    constructor(key, id, x, y, width, height, color){
-        this.key = key
-        this.id = id
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.color = color
-    } 
-    getKey(){
-        return this.key
-    }
-    getId(){
-        return this.id
-    }
-    getX(){
-        return this.x
-    }
-    getY(){
-        return this.y
-    }
-    getWidth(){
-        return this.width
-    }
-    getHeight(){
-        return this.height
-    }
-    getColor(){
-        return this.color
-    }
-    getDrag(){
-        return this.drag
-    }
-    setX(x){
-        this.x = x
-    }
-    setY(y){
-        this.y = y
-    }
-    setColor(color){
-        this.color = color
-    }
-    setDrag(drag){
-        this.drag = drag
-    }
-}
-
-
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
+const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow}) => {
     const shapeRef = React.useRef();
     const trRef = React.useRef();
   
@@ -66,18 +16,25 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
     return (
       <React.Fragment>
         <Rect
-            {...shapeProps}
           onClick={onSelect}
           onTap={onSelect}
           ref={shapeRef}
-          key={shapeProps.key}
+          cornerRadius={15}
+          {...shapeProps}
           draggable
+          onDragMove={dragMove}
+          onDragStart={dragStart}
           onDragEnd={(e) => {
             onChange({
               ...shapeProps,
-              x: e.target.x(),
-              y: e.target.y(),
+              x: Math.round(e.target.x()/snapSize) * snapSize,
+              y: Math.round(e.target.y()/snapSize) * snapSize,
+              
             });
+            e.target.to({
+                x: Math.round(e.target.x()/snapSize) * snapSize,
+                y: Math.round(e.target.y()/snapSize) * snapSize,
+            })
           }}
           onTransformEnd={(e) => {
             // transformer is changing scale of the node
@@ -93,18 +50,32 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
             node.scaleY(1);
             onChange({
               ...shapeProps,
-              x: node.x(),
-              y: node.y(),
+              x: Math.round(node.x()/snapSize) * snapSize,
+              y: Math.round(node.y()/snapSize) * snapSize,
               // set minimal value
-              width: Math.max(5, node.width() * scaleX),
-              height: Math.max(node.height() * scaleY),
+              width: Math.max(5, Math.round((node.width() * scaleX)/snapSize) * snapSize),
+              height: Math.max(Math.round((node.height() * scaleY)/snapSize) * snapSize),
             });
+            node.to({
+                x: Math.round(node.x()/snapSize) * snapSize,
+                y: Math.round(node.y()/snapSize) * snapSize
+            })
+            let shadowPipe = {
+                id: node.id(),
+                x: Math.round(node.x()/snapSize) * snapSize,
+                y: Math.round(node.y()/snapSize) * snapSize,
+                width: Math.max(5, Math.round((node.width() * scaleX)/snapSize) * snapSize),
+                height: Math.max(Math.round((node.height() * scaleY)/snapSize) * snapSize),
+            }
+            changeShadow(shadowPipe)
           }}
         />
         {isSelected && (
           <Transformer
             ref={trRef}
+            keepRatio={false}
             flipEnabled={false}
+            rotateEnabled={false}
             boundBoxFunc={(oldBox, newBox) => {
               // limit resize
               if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
@@ -117,15 +88,6 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
       </React.Fragment>
     );
   };
-
-
-
-class Shadow extends Room{
-    constructor(room){
-        super(room.getKey(), room.getId() + '_shadow', room.getX(), room.getY(), room.getWidth(), room.getHeight(), room.getColor())
-    }
-}
-
 
 const Editor = () => {
     const [snapSize, setSnapSize] = useState(50)
@@ -150,14 +112,13 @@ const Editor = () => {
     }
     if (rooms.length === 0){
         setRooms([
-            {key: '1room', id: '1room', x: 100, y: 0, width: snapSize*4, height: snapSize*2, color:'red'},
-            {key: '2room', id: '2room', x: 100, y: 300, width: snapSize*4, height: snapSize*6, color:'red'},
-            {key: '3room', id: '3room', x: 100, y: 800, width: snapSize*6, height: snapSize*2, color:'red'},
+            {id: '1room', X: 100, Y: 0, width: snapSize*4, height: snapSize*2, fill:'red'},
+            {id: '2room', X: 100, Y: 300, width: snapSize*4, height: snapSize*6, fill:'red'},
+            {id: '3room', X: 100, Y: 800, width: snapSize*6, height: snapSize*2, fill:'red'},
         ])
-        console.log(rooms)
     } else if (shadows.length !== rooms.length){
         setShadows(rooms.map((room) => {
-            return {key: room.key+'_shadow', id: room.id+'_shadow', x: room.x, y: room.y, width: room.width, height: room.height, color: room.color}
+            return {id: room.id+'_shadow', X: room.X, Y: room.Y, width: room.width, height: room.height, fill: room.fill}
         }))
     }
     const handleDragMove = (e) => {
@@ -173,7 +134,6 @@ const Editor = () => {
                 return shadow
             })
         )
-        
     }
     const handleDragStart = (e) => {
         const id = e.target.id()
@@ -183,48 +143,30 @@ const Editor = () => {
             })
         )
     }
-    const handleDragEnd = (e) => {
-        const id = e.target.id()
-        setRooms(
-            rooms.map((room) => {
-                if (String(room.id) === id){
-                    console.log('Прокнуло')
-                    let x = Math.round(e.target.x()/snapSize) * snapSize
-                    let y = Math.round(e.target.y()/snapSize) * snapSize
-                    room.X = x
-                    room.Y = y
-                    e.target.to({
-                        x: x,
-                        y: y
-                    })
+    const changeShadow = (pipe) => {
+        const id = pipe.id + '_shadow'
+        console.log(pipe.height)
+        setShadows(
+            shadows.map((shadow) => {
+                if (String(shadow.id) === id){
+                    let x = pipe.x
+                    let y = pipe.y
+                    let height = pipe.height
+                    let width = pipe.width
+                    shadow.X = x
+                    shadow.Y = y
+                    shadow.height = height
+                    shadow.width = width
                 }
-                return room
+                return shadow
             })
         )
     }
-    
     const handleWheel = (e) => {
         if (e.evt.wheelDelta > 0){
             setScale(scale < 3 ? scale + 0.25 : scale)
         }
         else {setScale(scale > 1 ? scale - 0.25 : scale)}
-    }
-    const handleClick = (e) => {
-        const id = e.target.id()
-        setRooms(
-            rooms.map((room) => {
-                if (String(room.id) === id) {
-                    room.color = room.getColor() === 'red' ? 'blue' : 'red'
-                    setShadows(shadows.map((shadow) => {
-                        if (shadow.id === id+'_shadow'){
-                            shadow.color = shadow.getColor() === 'red' ? 'blue' : 'red'
-                        }
-                        return shadow
-                    }))
-                }
-                return room
-            })
-        )
     }
     const checkDeselect = (e) => {
         const clickedOnEMpty = e.target === e.target.getStage();
@@ -232,6 +174,7 @@ const Editor = () => {
             setSelectedId(null);
         }
     }
+    if (rooms && shadows){
     return (
         <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel} width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={scale} scaleY={scale} draggable={true}>
             <Layer key='GridLayer'>
@@ -247,25 +190,29 @@ const Editor = () => {
             <Layer>
                 {shadows.map((shadow) => (
                 <Rect
-                    key={shadow.key+1000}
-                    id={shadow.id+'_shadow'}
+                    key={shadow.id+1000}
+                    id={shadow.id}
                     X={shadow.X}
                     Y={shadow.Y}
                     width={shadow.width}
                     height={shadow.height}
-                    fill={shadow.color}
+                    fill={shadow.fill}
                     cornerRadius={15}
                     opacity={0.45}
                 />
             ))}
-            {rooms.map((room, i) => (
+                {rooms.map((room, i) => (
                 <Rectangle
-                    key={room.key+'_rectangle'}
+                    key={room.id}
+                    snapSize={snapSize}
                     shapeProps={room}
                     isSelected={room.id === selectedId}
                     onSelect={() => {
                         setSelectedId(room.id)
                     }}
+                    changeShadow={changeShadow}
+                    dragStart={handleDragStart}
+                    dragMove={handleDragMove}
                     onChange={(newAttrs) => {
                         const rms = rooms.slice()
                         rms[i] = newAttrs
@@ -276,6 +223,6 @@ const Editor = () => {
             </Layer>     
         </Stage>
     )
-};
+}};
 
 export default Editor
