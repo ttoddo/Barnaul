@@ -65,6 +65,7 @@ export const getUser = async function (email, password){
       const data = await res.json()
       console.log('SignIn Success')
       localStorage.setItem('TOKEN', data.token)
+      localStorage.setItem('REFRESH_TOKEN', data.refreshToken)
       return true
     } catch {
       console.log("SignIn Error")
@@ -100,15 +101,39 @@ export const userInfo = async function (token) {
     userInfoSettings.method = 'GET'
     userInfoSettings.headers['Authorization'] = 'Bearer ' + token
     try {
-      const res = await fetch(api + '/profile', userInfoSettings)
-      const data = await res.json()
-      if (data.id){
-        return data
-      } else return false
-    } catch{
-      return false
+        const res = await fetch(api + '/profile', userInfoSettings)
+        const data = await res.json()
+        if (data.id){
+            return data
+        } else
+            return false 
+    } catch {
+        return false
     }
 } 
+
+export const refreshUser = async function (token, refreshToken) {
+    let getRefreshSettings = JSON.parse(JSON.stringify(settings))
+    getRefreshSettings.body = JSON.stringify({
+        token: token,
+        refreshToken: refreshToken
+    })
+    try {
+        const res = await fetch(api + '/auth/refresh-token')
+        if (res.status(200)){
+            const data = await res.json()
+            localStorage.setItem('TOKEN', data.token)
+            localStorage.setItem('REFRESH_TOKEN', data.refreshToken)
+        }
+        else {
+            console.log("Refresh Error")
+            return "BadRefresh"
+        }
+    } catch {
+        console.log("Refresh Error")
+        return "BadRefresh"
+    }
+}
 
 export const getBreakdowns = async function (token){
     let breakdownsSettings = JSON.parse(JSON.stringify(settings))
@@ -129,26 +154,6 @@ export const getBreakdowns = async function (token){
         return false
     }
 
-}
-
-export const validate = async function (token){
-    let validateSettings = JSON.parse(JSON.stringify(settings))
-    validateSettings.method = 'GET'
-    validateSettings.headers['Authorization'] = 'Bearer ' + token
-    try {
-        const res = await fetch(api + '/auth/valid', validateSettings)
-        const data = await res.json()
-        if (data.isValid){
-            console.log('Validate Success')
-            return true
-        } else{
-            console.log('Validate Error')
-            return false
-        }
-    } catch {
-        console.log('Validate Error')
-        return false
-    }
 }
 
 export const getUsers = async function (token) {
@@ -172,11 +177,11 @@ export const getUsers = async function (token) {
 }
 
 export const getAuds = async function (token) {
-    let getUsersSettings = JSON.parse(JSON.stringify(settings))
-    getUsersSettings.method = 'GET'
-    getUsersSettings.headers['Authorization'] = 'Bearer ' + token
+    let getAudsSettings = JSON.parse(JSON.stringify(settings))
+    getAudsSettings.method = 'GET'
+    getAudsSettings.headers['Authorization'] = 'Bearer ' + token
     try {
-        const res = await fetch(api + '/aud', getUsersSettings)
+        const res = await fetch(api + '/aud', getAudsSettings)
         const auds = await res.json()
         if (auds) {
             console.log('GetAuds Success')
@@ -193,6 +198,7 @@ export const getAuds = async function (token) {
 
 export const logOut = function (){
     localStorage.removeItem('TOKEN')
+    localStorage.removeItem('REFRESH_TOKEN')
     window.location.reload()
     console.log('LogOut Success')
     return
