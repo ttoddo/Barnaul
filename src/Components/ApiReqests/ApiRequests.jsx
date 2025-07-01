@@ -1,4 +1,4 @@
-const api = "https://bgitusec.online"
+const api = "https://bgitusec.online:7111/api"
 const settings = {
   method : 'POST',
   headers: {
@@ -58,7 +58,7 @@ export const removeUser = async function (id, token) {
 export const getUser = async function (email, password){
     let getUserSettings = JSON.parse(JSON.stringify(settings))
     getUserSettings.body = JSON.stringify(
-        {username: email,
+        {name: email,
         password: password})
     try {
       const res = await fetch(api + '/auth/sign-in', getUserSettings)
@@ -171,7 +171,25 @@ export const getUsers = async function (token) {
   }
 }
 
-
+export const getAuds = async function (token) {
+    let getUsersSettings = JSON.parse(JSON.stringify(settings))
+    getUsersSettings.method = 'GET'
+    getUsersSettings.headers['Authorization'] = 'Bearer ' + token
+    try {
+        const res = await fetch(api + '/aud', getUsersSettings)
+        const auds = await res.json()
+        if (auds) {
+            console.log('GetAuds Success')
+            return auds
+        } else {
+            console.log('GetAuds Error')
+            return false
+        }
+    } catch {
+        console.log('GetAuds Error')
+        return false
+    }
+}
 
 export const logOut = function (){
     localStorage.removeItem('TOKEN')

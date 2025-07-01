@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Layer, Line, Rect, Stage, Text, Transformer } from "react-konva";
+import { Group, Layer, Line, Rect, Stage, Text, Transformer } from "react-konva";
+import { getAuds } from "../Components/ApiReqests/ApiRequests";
 
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow}) => {
-    const shapeRef = React.useRef();
-    const trRef = React.useRef();
+const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick}) => {
+    const shapeRef = useRef();
+    const trRef = useRef();
   
-    React.useEffect(() => {
+    useEffect(() => {
       if (isSelected) {
         // we need to attach transformer manually
         trRef.current.nodes([shapeRef.current]);
@@ -15,11 +16,11 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragS
   
     return (
       <React.Fragment>
-        <Rect
+        <Group
+          onDblClick={onDblClick}
           onClick={onSelect}
           onTap={onSelect}
           ref={shapeRef}
-          cornerRadius={15}
           {...shapeProps}
           draggable
           onDragMove={dragMove}
@@ -69,7 +70,10 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragS
             }
             changeShadow(shadowPipe)
           }}
-        />
+        >
+            <Rect fill={shapeProps.fill} width={shapeProps.width} height={shapeProps.height} cornerRadius={15}/>
+            <Text text={shapeProps.id} fontSize={(shapeProps.width + shapeProps.height) / 20} x={20} y={20}></Text>
+        </Group>
         {isSelected && (
           <Transformer
             ref={trRef}
@@ -90,15 +94,44 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragS
   };
 
 const Editor = () => {
-    const [snapSize, setSnapSize] = useState(50)
+    const [snapSize, setSnapSize] = useState(25)
     const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth , height: window.innerHeight });
     const [gridlines, setGridLines] = useState([])
     const [scale, setScale] = useState(1)
+
     const [rooms, setRooms] = useState([])
     const [shadows, setShadows] = useState([])
     const [selectedId, setSelectedId] = useState([])
 
+    const [stageId, setStageId] = useState(0)
 
+    const [isLoading, setIsLoading] = useState(true)
+
+    const roomsParse = (roomsArr) => {
+        let parsedRooms = []
+        roomsArr.forEach(room => {
+            // Room example: {floor: 0, isComputer: true, name: "218", position: "0;0", size: "2*2", buildingId: 1}
+            let coords = room.position.split(";")
+            let x = parseFloat(coords[0]) * 100
+            let y = parseFloat(coords[1]) * 100
+            let sizes = room.size.split("*")
+            let widthMultiplicator = parseFloat(sizes[0]) / 0.25
+            let heightMultiplicator = parseFloat(sizes[1]) / 0.25
+            let parsedRoom = {id: room.name, X: x, Y: y, width: snapSize*widthMultiplicator, height: snapSize*heightMultiplicator, fill: room.isComputer ? "red" : "blue"}
+            parsedRooms.push(parsedRoom)
+        });
+        setRooms(parsedRooms)
+        setIsLoading(false)
+    }
+
+    useEffect(() => {
+        async function getAudithoriums() {
+            let auds = await getAuds(localStorage.getItem('TOKEN'))
+            console.log(auds)
+            roomsParse(auds)
+        }
+        getAudithoriums()
+    }, [])
 
     if (gridlines.length === 0){
         let gridlinesTemp = []
@@ -110,17 +143,16 @@ const Editor = () => {
         }
         setGridLines(gridlinesTemp)
     }
-    if (rooms.length === 0){
-        setRooms([
-            {id: '1room', X: 100, Y: 0, width: snapSize*4, height: snapSize*2, fill:'red'},
-            {id: '2room', X: 100, Y: 300, width: snapSize*4, height: snapSize*6, fill:'red'},
-            {id: '3room', X: 100, Y: 800, width: snapSize*6, height: snapSize*2, fill:'red'},
-        ])
-    } else if (shadows.length !== rooms.length){
+    if (shadows.length !== rooms.length){
         setShadows(rooms.map((room) => {
             return {id: room.id+'_shadow', X: room.X, Y: room.Y, width: room.width, height: room.height, fill: room.fill}
         }))
     }
+
+    const handleOpenAuditory = (id) => {
+        setStageId(id);
+    }
+
     const handleDragMove = (e) => {
         const id = e.target.id() + '_shadow'
         setShadows(
@@ -136,7 +168,6 @@ const Editor = () => {
         )
     }
     const handleDragStart = (e) => {
-        const id = e.target.id()
         setRooms(
             rooms.map((room) => {
                 return room
@@ -174,8 +205,13 @@ const Editor = () => {
             setSelectedId(null);
         }
     }
-    if (rooms && shadows){
-    return (
+
+    const handleOnClickText = () => {
+        setStageId(0)
+    }
+
+    if (!isLoading){
+    return stageId === 0 ? (
         <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel} width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={scale} scaleY={scale} draggable={true}>
             <Layer key='GridLayer'>
                 {gridlines.map((line) =>(
@@ -207,9 +243,8 @@ const Editor = () => {
                     snapSize={snapSize}
                     shapeProps={room}
                     isSelected={room.id === selectedId}
-                    onSelect={() => {
-                        setSelectedId(room.id)
-                    }}
+                    onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : console.log("Это для капмутираф дебил")}
+                    onSelect={() => {setSelectedId(room.id)}}
                     changeShadow={changeShadow}
                     dragStart={handleDragStart}
                     dragMove={handleDragMove}
@@ -222,7 +257,16 @@ const Editor = () => {
             ))}
             </Layer>     
         </Stage>
+    ) : (
+        <Stage key="AudStage" id={stageId} onMouseDown={checkDeselect} onWheel={handleWheel} width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={scale} scaleY={scale} draggable={true}>
+            <Layer>
+                <Text text="Назад" x={100} y={100} fontSize={16} onClick={handleOnClickText}/>
+            </Layer>
+            
+            
+        </Stage>
     )
+
 }};
 
 export default Editor
