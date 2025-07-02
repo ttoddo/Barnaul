@@ -3,7 +3,7 @@ import logo from '../icons/logo.svg'
 import '../styles/Header.css'
 import HeaderBtn from './UI/HeaderButton/HeaderBtn'
 import '../styles/App.css'
-import {logOut, userInfo, refreshUser} from './ApiReqests/ApiRequests'
+import {logOut, userInfo} from './ApiReqests/ApiRequests'
 import { useNavigate } from 'react-router-dom'
 
 const Header = function(){
@@ -13,19 +13,12 @@ const Header = function(){
     useEffect(() => {
         const getUserInfo = async () => {
             let res = await userInfo(localStorage.getItem('TOKEN'))
-            if (!res) {
-                res = await refreshUser(localStorage.getItem('TOKEN'), localStorage.getItem('REFRESH_TOKEN'))
-                if (!res){
-                    res = await userInfo(localStorage.getItem('TOKEN'))
-                }
-            }
             if (res){
                 setUserInfo(res)
                 setIsLoading(false)
             }
             }
         getUserInfo()
-        .catch()
     }, [])
     const navigate = useNavigate()
     function handleProfileClick() {

@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback, useReducer } from "react";
-import Audithorium from "../Components/EditorParts/AudComponent" 
-import { Layer, Line, Rect, Stage, Text, } from "react-konva";
-import { getAuds } from "../Components/ApiReqests/ApiRequests";
+import GigaRect from "../Components/EditorParts/RectComponent" 
+import { Layer, Line, Rect, Stage } from "react-konva";
+import { getAuds, userInfo, getComputers } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
+import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -29,81 +30,154 @@ function shadowsReducer(state, action) {
     }
 }
 
+function gridLinesReducer(state, action) {
+    switch (action.type) {
+        case 'init':
+            return action.payload
+        case 'resize':
+            break
+        default:
+            return state
+    }
+}
+
 const Editor = () => {
     let snapSize = 25
     let canvasSize = {width: window.innerWidth, height: window.innerHeight}
 
-    const [gridlines, setGridLines] = useState([])
+    let buildings = {1: [{name: 1}, {name: 2}, {name: 3}, {name: 4}],
+        2: [{name: 1}, {name: 2}, {name: 3}, {name: 4}, {name: 5}]}
+
+    const [level, setLevel] = useState(1)
+
+    const [building, setBuilding] = useState(1)
+
+    const [editMode, setEditMode] = useState(false)
+
     const [scale, setScale] = useState(1)
 
     const [rooms, setRooms] = useState([])
     const [shadows, dispatchShadows] = useReducer(shadowsReducer, [])
+    const [gridLines, dispatchGridLines] = useReducer(gridLinesReducer, [])
+    // Временно отключено в связи с отказом от веб-редактора.
+    // const [limits, setLimits] = useState({})
     
     const [selectedId, setSelectedId] = useState([])
 
-    const [stageId, setStageId] = useState(0)
+    const [stageId, setStageId] = useState('0')
 
     const [isLoading, setIsLoading] = useState(true)
 
     const navigate = useNavigate()
 
-    const roomsParse = useCallback((roomsArr) => {
-        let parsedRooms = []
-        roomsArr.forEach(room => {
-            // Room example: {floor: 0, isComputer: true, name: "218", position: "0;0", size: "2*2", buildingId: 1}
-            let coords = room.position.split(";")
-            let x = parseFloat(coords[0]) * 100
-            let y = parseFloat(coords[1]) * 100
-            let sizes = room.size.split("*")
-            let widthMultiplicator = parseFloat(sizes[0]) / 0.25
-            let heightMultiplicator = parseFloat(sizes[1]) / 0.25
-            let parsedRoom = {id: room.name, X: x, Y: y, width: snapSize*widthMultiplicator, height: snapSize*heightMultiplicator, fill: room.isComputer ? "red" : "blue"}
-            parsedRooms.push(parsedRoom)
+    const gigaRectParse = useCallback((rectsArr, isComputer, stageId) => {
+        let parsedRects = []
+        rectsArr.forEach(rect => {
+            // Room example: {floor: 0, isComputer: true, name: "218", position: "0;0", size: "2;2", buildingId: 1}
+            let coords = rect.position.split(";")
+            let sizes = rect.size.split(";")
+            let width = parseFloat(sizes[0].replace(",", ".")) * (isComputer ? 1000 : 100)
+            let height = parseFloat(sizes[1].replace(",", ".")) * (isComputer ? 1000 : 100)
+
+            let x = (parseFloat(coords[0].replace(",", ".")) * (isComputer ? 1000 : 100)) - width / 2
+            let y = (parseFloat(coords[1].replace(",", ".")) * (isComputer ? 1000 : 100)) + height / 2
+
+            let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
+                X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
+                fill: isComputer ? "lightblue" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null}
+            if (isComputer){
+                stageId === parsedRect.audId ? parsedRects.push(parsedRect) : parsedRect = {}
+            } else {
+                level === parsedRect.levelId && building === parsedRect.buildingId ? parsedRects.push(parsedRect) : parsedRect = {}
+            } 
         })
-        return parsedRooms
-    }, [snapSize]);
+        console.log(parsedRects)
+        return parsedRects
+    }, [level, building]);
+
+    const getLimits = (rooms) => {
+        let maxX = -Infinity
+            let maxY = -Infinity
+            let minX = Infinity
+            let minY = Infinity
+            rooms.forEach(room => {
+                let xRight = room.X + room.width
+                let yDown = room.Y + room.height
+
+                maxX = Math.max(maxX, xRight)
+                maxY = Math.max(maxY, yDown)
+                minX = Math.min(minX, room.X)
+                minY = Math.min(minY, room.Y)
+        })
+        return {maxX: maxX, minX:minX, maxY:maxY, minY:minY}
+    }
+
+    const collectGridLines = useCallback((limitsInside) => {
+        let gridLinesTemp = []
+        for (let x = limitsInside.minX; x <= limitsInside.maxX; x += snapSize){
+            gridLinesTemp.push({key: x+'gridLineX', points: [x, limitsInside.minY, x, limitsInside.maxY]})
+        }
+        for (let y = limitsInside.minY; y <= limitsInside.maxY; y += snapSize){
+            gridLinesTemp.push({key: y+'gridLineY', points: [limitsInside.minX, y, limitsInside.maxX, y]})
+        }
+        return gridLinesTemp
+    }, [snapSize])
 
     useEffect(() => {
-        async function getAudithoriums() {
-            let auds = await getAuds(localStorage.getItem('TOKEN'))
-            if (!auds) {
-                navigate("/signin")
-            }
-            let parsedRooms = roomsParse(auds)
-            setRooms(parsedRooms)
-            console.log(parsedRooms)
-            dispatchShadows({
-                type: 'init',
-                payload: parsedRooms.map(room => ({
-                    id: room.id + '_shadow',
-                    X: room.X,
-                    Y: room.Y,
-                    width: room.width,
-                    height: room.height,
-                    fill: room.fill
-                }))
-            })
-            setIsLoading(false)
-        }
-        getAudithoriums()
-    }, [roomsParse, navigate])
+        async function collectInfo() {
+            let res = await userInfo(localStorage.getItem('TOKEN'))
 
-    if (gridlines.length === 0){
-        let gridlinesTemp = []
-        for (let x = 0; x <= canvasSize.width / snapSize; x++){
-            gridlinesTemp = [...gridlinesTemp, {key: x+'gridLineX', points: [Math.round(x * snapSize), 0, Math.round(x * snapSize), canvasSize.height]}]
+            if (res){
+                let rects
+                let isComputer
+                if (stageId === '0'){
+                    rects = await getAuds(localStorage.getItem('TOKEN'))
+                    isComputer = false
+                } else {
+                    rects = await getComputers(localStorage.getItem('TOKEN'))
+                    isComputer = true
+                }
+                if (!rects) {
+                    navigate("/signin")
+                }
+                console.log(rects)
+                let parsedRects = gigaRectParse(rects.response, isComputer, stageId)
+                setRooms(parsedRects)
+
+                dispatchShadows({
+                    type: 'init',
+                    payload: parsedRects.map(rect => ({
+                        id: rect.id + '_shadow',
+                        X: rect.X,
+                        Y: rect.Y,
+                        width: rect.width,
+                        height: rect.height,
+                        fill: rect.fill
+                    }))
+                })
+                let limitsTemp = getLimits(parsedRects)
+                let collectedGridLines = collectGridLines(limitsTemp)
+                dispatchGridLines({
+                    type: 'init',
+                    payload: collectedGridLines
+                })
+                // setLimits(limitsTemp)
+                setIsLoading(false)
+            } else navigate("/signin")
         }
-        for (let y = 0; y <= canvasSize.height / snapSize; y++){
-            gridlinesTemp = [...gridlinesTemp, {key: y+'gridLineY', points: [0, Math.round(y * snapSize), canvasSize.width, Math.round(y * snapSize)]}]
-        }
-        setGridLines(gridlinesTemp)
+        collectInfo()
+    }, [gigaRectParse, navigate, collectGridLines, stageId])
+
+    const checkEditMode = () => {
+        console.log("Войдите в режим редактирования, чтобы изменять объекты!")
+        return editMode
     }
 
     const handleOpenAuditory = (id) => {
         setStageId(id);
     }
     const handleClosedAuditory = (id) => {
-        console.log(`Эта для кампутираф ${id}"`)
+        console.log(`Эта для кампутираф ${id}`)
     }
 
     const handleDragMove = (e) => {
@@ -132,10 +206,10 @@ const Editor = () => {
         })
     }
     const handleWheel = (e) => {
-        if (e.evt.wheelDelta > 0){
-            setScale(scale < 3 ? scale + 0.25 : scale)
-        }
-        else {setScale(scale > 1 ? scale - 0.25 : scale)}
+        setScale(prev => {
+            const delta = e.evt.wheelDelta > 0 ? 0.05 : -0.05;
+            return Math.min(3, Math.max(0.25, prev + delta));
+        });
     }
     const checkDeselect = (e) => {
         const clickedOnEMpty = e.target === e.target.getStage();
@@ -145,79 +219,198 @@ const Editor = () => {
     }
 
     const handleOnClickText = () => {
-        setStageId(0)
+        setStageId('0')
     }
 
-    if (!isLoading){
-    return stageId === 0 ? (
-        <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel} width={canvasSize.width} height={canvasSize.height * 0.85} scaleX={scale} scaleY={scale} draggable={true}>
-            <Layer key='GridLayer'>
-                {gridlines.map((line) =>(
-                    <Line
-                        key={line.key + ' line'}
-                        points={line.points}
-                        stroke="#ddd"
-                        strokeWidth={2}
-                    />
-                ))}
-            </Layer>
-            <Layer>
-                {shadows.map((shadow) => (
-                <Rect
-                    key={shadow.id+1000}
-                    id={shadow.id}
-                    x={shadow.X}
-                    y={shadow.Y}
-                    width={shadow.width}
-                    height={shadow.height}
-                    fill={shadow.fill}
-                    cornerRadius={15}
-                    opacity={0.45}
-                />
-            ))}
-                {rooms.map((room, i) => (
-                <Audithorium
-                    key={room.id}
-                    snapSize={snapSize}
-                    shapeProps={room}
-                    isSelected={room.id === selectedId}
-                    onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
-                    onSelect={() => {setSelectedId(room.id)}}
-                    changeShadow={changeShadow}
-                    dragStart={handleDragStart}
-                    dragMove={handleDragMove}
-                    onChange={(newAttrs) => {
-                        const rms = rooms.slice()
-                        rms[i] = newAttrs
-                        setRooms(rms)
-                    }}
-                />
-            ))}
-            </Layer>     
-        </Stage>
-    ) : (
-        <Stage key="AudStage"
-            id={stageId}
-            onMouseDown={checkDeselect}
-            onWheel={handleWheel}
-            width={canvasSize.width}
-            height={canvasSize.height * 0.85}
-            scaleX={scale}
-            scaleY={scale}
-            draggable={true}>
-            <Layer>
-                <Text text="Назад"
-                    x={100}
-                    y={100}
-                    fontSize={16}
-                    onClick={handleOnClickText}
-                />
-            </Layer>
-            
-            
-        </Stage>
-    )
+    const handleSwitchToEditMode = () => {
+        setEditMode(!editMode)
+        setSelectedId(null)
+    }
 
+    const handleBuildingSwitch = (id) => {
+        if (id === building){
+            console.log("Это то же здание")
+        } else {
+            setBuilding(id)
+        }
+    }   
+
+    const handleLevelSwitch = (id) => {
+        if (level === id){
+            console.log("Это тот же этаж")
+        } else {
+            setLevel(id)
+        }
+    }
+
+
+    if (!isLoading && level && building){
+        return stageId === '0' ? (
+            <div style={{ position: "relative", width:"100%", height:"100%"}}>
+                <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
+                    width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
+                    scaleX={scale} scaleY={scale} draggable={true}>
+                    <Layer key='GridLayer'>
+                        {gridLines.map((line) =>(
+                            <Line
+                                key={line.key + ' line'}
+                                points={line.points}
+                                stroke="#ddd"
+                                strokeWidth={2}
+                            />
+                        ))}
+                    </Layer>
+                    <Layer>
+                        {shadows.map((shadow) => (
+                        <Rect
+                            key={shadow.id+1000}
+                            id={shadow.id}
+                            x={shadow.X}
+                            y={shadow.Y}
+                            width={shadow.width}
+                            height={shadow.height}
+                            fill={shadow.fill}
+                            cornerRadius={15}
+                            opacity={0.45}
+                        />
+                    ))}
+                        {rooms.map((room, i) => (
+                        <GigaRect
+                            key={room.id}
+                            editMode={editMode}
+                            snapSize={snapSize}
+                            shapeProps={room}
+                            isSelected={room.id === selectedId}
+                            onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
+                            onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
+                            changeShadow={changeShadow}
+                            dragStart={editMode ? handleDragStart : checkEditMode}
+                            dragMove={editMode ? handleDragMove : checkEditMode}
+                            onChange={(newAttrs) => {
+                                const rms = rooms.slice()
+                                rms[i] = newAttrs
+                                setRooms(rms)
+                            }}
+                        />
+                    ))}
+                    </Layer>    
+                </Stage>
+                <div onClick={handleSwitchToEditMode} style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    cursor: 'pointer'
+                }}>
+                    <p>{editMode ? 'Выйти из режима редактирования' : 'Войти в режим редактирования'}</p>
+
+                </div>
+                <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: 10,
+                    transform: "translateY(-50%)",
+                    width: "120px",
+                    backgroundColor: "lightblue",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    borderRadius: "5px"
+
+                }}>
+                    {buildings[building].map((btn, i) => (
+                        <CommonBtn key={i + 1} value={btn.name} onClick={() => handleLevelSwitch(btn.name)}
+                            style={i + 1 === level ? {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px", backgroundColor: "blue"} : {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px"}}/>
+                    ))}
+                </div>
+                <div style={{
+                    position: "absolute",
+                    top: 10,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    height: "75px",
+                    width: "25%",
+                    backgroundColor: "lightblue",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    alignItems: "center"
+                }}>
+                    <CommonBtn value="1 Копрус" inactive={building === 1} onClick={() => handleBuildingSwitch(1)}
+                        style={building === 1 ? {width: "45%", height: "90%", backgroundColor: "blue"} : {width: "45%", height: "90%"}}
+                    />
+                    <CommonBtn value="2 Корпус" inactive={building === 2} onClick={() => handleBuildingSwitch(2)}
+                        style={building === 2 ? {width: "45%", height: "90%", backgroundColor: "blue"} : {width: "45%", height: "90%"}}
+                    /> 
+                </div>
+            </div>
+        ) : (
+            <div style={{ position: "relative", width:"100%", height:"100%"}}>
+                <Stage key="AudStage"
+                    id={stageId}
+                    onMouseDown={checkDeselect}
+                    onWheel={handleWheel}
+                    width={canvasSize.width}
+                    height={canvasSize.height * 0.85}
+                    scaleX={scale}
+                    scaleY={scale}
+                    draggable={true} 
+                    offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}>
+                    <Layer key='GridLayer'>
+                        {gridLines.map((line) =>(
+                            <Line
+                                key={line.key + ' line'}
+                                points={line.points}
+                                stroke="#ddd"
+                                strokeWidth={2}
+                            />
+                        ))}
+                    </Layer>
+                    <Layer>
+                        {shadows.map((shadow) => (
+                        <Rect
+                            key={shadow.id+1000}
+                            id={shadow.id}
+                            x={shadow.X}
+                            y={shadow.Y}
+                            width={shadow.width}
+                            height={shadow.height}
+                            fill={shadow.fill}
+                            cornerRadius={15}
+                            opacity={0.45}
+                        />
+                    ))}
+                    {rooms.map((room, i) => (
+                        <GigaRect
+                            key={room.id}
+                            editMode={editMode}
+                            snapSize={snapSize}
+                            shapeProps={room}
+                            isSelected={room.id === selectedId}
+                            onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
+                            onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
+                            changeShadow={changeShadow}
+                            dragStart={editMode ? handleDragStart : checkEditMode}
+                            dragMove={editMode ? handleDragMove : checkEditMode}
+                            onChange={(newAttrs) => {
+                                const rms = rooms.slice()
+                                rms[i] = newAttrs
+                                setRooms(rms)
+                            }}
+                        />
+                    ))}
+                    </Layer>
+                </Stage>
+                <div onClick={handleOnClickText} style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    cursor: 'pointer'
+                }}>
+                    <p>{'ЗАБЕРИТЕ МЕНЯ ДОМОЙЙЙЙЙ'}</p>
+                </div>
+            </div>
+        )
 }};
 
 export default Editor

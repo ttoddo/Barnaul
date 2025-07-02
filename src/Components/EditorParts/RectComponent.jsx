@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Group, Rect, Text, Transformer } from "react-konva";
+import { Group, Rect, Text, Circle, Transformer } from "react-konva";
 
-const Audithorium = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick}) => {
+const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode}) => {
     const shapeRef = useRef();
     const trRef = useRef();
   
@@ -21,7 +21,7 @@ const Audithorium = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dra
           onTap={onSelect}
           ref={shapeRef}
           {...shapeProps}
-          draggable
+          draggable={editMode}
           onDragMove={dragMove}
           onDragStart={dragStart}
           onDragEnd={(e) => {
@@ -71,7 +71,20 @@ const Audithorium = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dra
           }}
         >
             <Rect fill={shapeProps.fill} width={shapeProps.width} height={shapeProps.height} cornerRadius={15}/>
-            <Text text={shapeProps.id} fontSize={(shapeProps.width + shapeProps.height) / 20} x={20} y={20}></Text>
+
+            <Circle fill={"yellow"} listening={false}
+              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
+              x={shapeProps.width - (shapeProps.width / 25) * 1}/>
+
+            <Circle fill={"orange"} listening={false}
+              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
+              x={shapeProps.width - (shapeProps.width / 25) * 2}/>
+
+            <Circle fill={"red"} listening={false}
+              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
+              x={shapeProps.width - (shapeProps.width / 25) * 3}/>
+              
+            <Text text={shapeProps.name} fontSize={(shapeProps.width + shapeProps.height) / 20} width={shapeProps.width} height={shapeProps.height} verticalAlign="middle" align="center"></Text>
         </Group>
         {isSelected && (
           <Transformer
@@ -92,4 +105,4 @@ const Audithorium = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dra
     );
   };
 
-export default Audithorium
+export default GigaRect

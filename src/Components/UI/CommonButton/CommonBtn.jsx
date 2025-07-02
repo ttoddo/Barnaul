@@ -3,7 +3,7 @@ import styles from './CommonBtn.module.css'
 
 const CommonBtn =function(props) {
   return (
-    <button className={styles.commonBtn} type='Button' {...props}>
+    <button className={props.inactive ? styles.inactiveCommonBtn : styles.commonBtn} type='Button' {...props}>
         {props.value}
     </button>
   )
