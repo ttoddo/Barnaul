@@ -129,6 +129,26 @@ export const getComputers = async function (token) {
     }
 }
 
+export const getBreakdowns = async function (token){
+    let breakdownsSettings = JSON.parse(JSON.stringify(settings))
+    breakdownsSettings.method = 'GET'
+    breakdownsSettings.headers['Authorization'] = 'Bearer ' + token
+
+    let route = api + '/breakdown'
+    const res = await request(route, breakdownsSettings)
+    
+    if (res) {
+        let data = await res.json()
+        console.log("Breakdowns Seek Success")
+        console.log(data)
+        return data
+    } else {
+        console.log('Breakdowns Seek Error')
+        return false
+    }
+}
+
+
 export const logOut = function (){
     localStorage.removeItem('TOKEN')
     localStorage.removeItem('REFRESH_TOKEN')
@@ -160,26 +180,7 @@ export const addUser = async function (username, email, password, role, token) {
     }
 }
 
-export const getBreakdowns = async function (token){
-    let breakdownsSettings = JSON.parse(JSON.stringify(settings))
-    breakdownsSettings.method = 'GET'
-    breakdownsSettings.headers['Authorization'] = 'Bearer ' + token
-    try {
-        const res = await fetch(api + '/breakdown/get-all', breakdownsSettings)
-        const data = await res.json()
-        if (data.breakdowns[0]){
-            console.log('Breakdowns Seek Success')
-            return data
-        } else{
-            console.log('Breakdowns Error')
-            return false
-        }
-    } catch {
-        console.log('Breakdowns Error')
-        return false
-    }
 
-}
 
 export const getUsers = async function (token) {
     let getUsersSettings = JSON.parse(JSON.stringify(settings))

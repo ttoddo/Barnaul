@@ -23,7 +23,7 @@ const ProfileStatistic = function(props) {
             let breakdowns = await getBreakdowns(token) // Два запроса
 
             setUserInfo(user)
-            setBreakdowns(breakdowns) // Запись запросов в состояния
+            setBreakdowns(breakdowns.response) // Запись запросов в состояния
             await sleep(10000) // Это удалишь, как разберешься, как это работает
             setIsLoading(false) // Тут мы меняем состояние загрузки == загрузка закончилась. Все изменения состояний проводят обновление вкладки, но так как прошлые set функции изменялись,
                                 // но isLoading был false, мы не попадали во вторую часть кода только с данными пользователя.
@@ -40,19 +40,19 @@ const ProfileStatistic = function(props) {
       ) // Тут я навалил грязи с ErrorBlock, но выглядит оно нормально
     } else { // Сюда попадем только в случае, если загрузка кончилась 
       let error_count = 0;
-      for (let i = 0; i < breakdown.breakdowns.length; i++){
-        if (breakdown.breakdowns[i].userId === userInformation.id){
+      for (let i = 0; i < breakdown.length; i++){
+        if (breakdown[i].userId === userInformation.id){
           error_count++
         }
       }
       if (error.length !== error_count){
         let tempError = []
-        for (let i = 0; i < breakdown.breakdowns.length; i++){
-          if (breakdown.breakdowns[i].userId === userInformation.id){
+        for (let i = 0; i < breakdown.length; i++){
+          if (breakdown[i].userId === userInformation.id){
             let _color = ''
             let _status
-            let level = breakdown.breakdowns[i].level
-            if (breakdown.breakdowns[i].isSolved){
+            let level = breakdown[i].level
+            if (breakdown[i].isSolved){
                _status = 'Solved'
             } else {_status = 'Not Solved'}
             if (_status === 'Solved') {
@@ -74,7 +74,7 @@ const ProfileStatistic = function(props) {
               default:
                 console.log('Backender needs to be punished.')
             }
-            tempError = [...tempError, {key: breakdown.breakdowns[i].id, title: breakdown.breakdowns[i].description, date: breakdown.breakdowns[i].date,
+            tempError = [...tempError, {key: breakdown[i].id, title: breakdown[i].description, date: breakdown[i].date,
                             username: userInformation.username, status: _status, color: _color, level: level}]
           }
         }

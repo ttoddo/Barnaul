@@ -20,10 +20,10 @@ const ProfileDataReport = function(props) {
   let solvedCount = 0
   let breakdownCount = 0
   if (breakdown && userInformation){
-    for (let i = 0; i < breakdown.breakdowns.length; i++){
-      if (breakdown.breakdowns[i].userId === userInformation.id){
+    for (let i = 0; i < breakdown.length; i++){
+      if (breakdown[i].userId === userInformation.id){
         breakdownCount++
-        if (breakdown.breakdowns[i].isSolved){solvedCount++}
+        if (breakdown[i].isSolved){solvedCount++}
       }
     }
     return (

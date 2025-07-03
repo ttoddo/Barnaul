@@ -4,8 +4,9 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
-import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+import { Button, Dialog, DialogPanel, DialogTitle, Description } from '@headlessui/react'
 import "../styles/Editor.css"
+import ProfileStatistic from "../Components/ProfileStatistic";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -260,48 +261,15 @@ const Editor = () => {
         }
     }
 
-    const open = () => {
-        setIsOpen(true)
-    }
-    const close = () => {
-        setIsOpen(false)
-    }
-
     if (!isLoading && level && building){
         return stageId === '0' ? (
             <div className="screenCont">
                 <Button
-                    onClick={open}
+                    onClick={() => setIsOpen(true)}
                     className="rounded-md bg-black/20 px-4 py-2 text-sm font-medium text-white focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-black/30"
                 >
                     Open dialog
-                </Button>
-                <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none" onClose={close}>
-                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel
-                        transition
-                        className="w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
-                        >
-                        <DialogTitle as="h3" className="text-base/7 font-medium text-white">
-                            Payment successful
-                        </DialogTitle>
-                        <p className="mt-2 text-sm/6 text-white/50">
-                            Your payment has been successfully submitted. We’ve sent you an email with all of the details of your
-                            order.
-                        </p>
-                        <div className="mt-4">
-                            <Button
-                            className="inline-flex items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
-                            onClick={close}
-                            >
-                            Got it, thanks!
-                            </Button>
-                        </div>
-                        </DialogPanel>
-                    </div>
-                    </div>
-                </Dialog>
+                </Button>   
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
                     width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>
@@ -419,7 +387,7 @@ const Editor = () => {
                             snapSize={snapSize}
                             shapeProps={room}
                             isSelected={room.id === selectedId}
-                            onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
+                            onDblClick={() => setIsOpen(true)}
                             onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
@@ -433,6 +401,20 @@ const Editor = () => {
                     ))}
                     </Layer>
                 </Stage>
+                <Dialog open={isOpen} as="div" className="absolute z-10 focus:outline-none" onClose={() => setIsOpen(false)}>
+                    <div className="relative focus:outline-none">
+                        <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 overflow-y-auto flex items-center justify-center">
+                            <DialogPanel transition
+                                className="w-full max-w-md rounded-md bg-slate-600/20 backdrop-blur-md duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                            >
+                                <DialogTitle className="text-base/7 text-purple-400">
+                                    pamagiti?
+                                </DialogTitle>  
+                                <ProfileStatistic/>
+                            </DialogPanel>
+                        </div>
+                    </div>
+                </Dialog>
                 <div onClick={handleOnClickText} style={{
                     position: "absolute",
                     top: 10,

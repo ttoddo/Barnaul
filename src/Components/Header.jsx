@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import logo from '../icons/logo.svg'
 import '../styles/Header.css'
 import HeaderBtn from './UI/HeaderButton/HeaderBtn'
-import '../styles/App.css'
 import {logOut, userInfo} from './ApiReqests/ApiRequests'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,6 +14,10 @@ const Header = function(){
             let res = await userInfo(localStorage.getItem('TOKEN'))
             if (res){
                 setUserInfo(res)
+                setIsLoading(false)
+            } else {
+                let user = {role: null}
+                setUserInfo(user)
                 setIsLoading(false)
             }
             }
