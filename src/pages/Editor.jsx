@@ -4,7 +4,7 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
-import { Button, Dialog, DialogPanel, DialogTitle, Description } from '@headlessui/react'
+import { Button, Dialog, DialogPanel, DialogTitle, Select } from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 
@@ -76,6 +76,10 @@ const Editor = () => {
 
     const [isLoading, setIsLoading] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const [openComputerId, setOpenComputerId] = useState(null)
+
+    const [statusFilter, setStatusFilter] = useState("all")
+    const [hardnessFilter, setHardnessFilter] = useState("all")
 
     const navigate = useNavigate()
 
@@ -93,7 +97,7 @@ const Editor = () => {
 
             let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
                 X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
-                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null}
+                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null}
             if (isComputer){
                 stageId === parsedRect.audId ? parsedRects.push(parsedRect) : parsedRect = {}
             } else {
@@ -261,6 +265,25 @@ const Editor = () => {
         }
     }
 
+    const handleOpenComputer = (id) => {
+        setIsOpen(true)
+        setOpenComputerId(id)
+    }
+    const handleCloseComputer = () => {
+        setIsOpen(false)
+        setOpenComputerId(null)
+        setStatusFilter("all")
+        setHardnessFilter("all")
+    }
+
+    const handleHardnessChange = (e) => {
+        setHardnessFilter(e.target.value)
+    }
+    const handleStatusChange = (e) => {
+        setStatusFilter(e.target.value)
+        console.log("Поменяли")
+    }
+
     if (!isLoading && level && building){
         return stageId === '0' ? (
             <div className="screenCont">
@@ -387,7 +410,7 @@ const Editor = () => {
                             snapSize={snapSize}
                             shapeProps={room}
                             isSelected={room.id === selectedId}
-                            onDblClick={() => setIsOpen(true)}
+                            onDblClick={() => handleOpenComputer(room.id)}
                             onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
@@ -401,16 +424,33 @@ const Editor = () => {
                     ))}
                     </Layer>
                 </Stage>
-                <Dialog open={isOpen} as="div" className="absolute z-10 focus:outline-none" onClose={() => setIsOpen(false)}>
+                <Dialog open={isOpen} as="div" className="absolute z-10 focus:outline-none" onClose={handleCloseComputer}>
                     <div className="relative focus:outline-none">
                         <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 overflow-y-auto flex items-center justify-center">
                             <DialogPanel transition
                                 className="w-full max-w-md rounded-md bg-slate-600/20 backdrop-blur-md duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
-                                <DialogTitle className="text-base/7 text-purple-400">
+                                <DialogTitle className="text-base/7 ">
                                     pamagiti?
                                 </DialogTitle>  
-                                <ProfileStatistic/>
+                                <div className="flex flex-row">
+                                    <div>
+                                        <Select onChange={handleHardnessChange} name="hardness">
+                                            <option value="all">Все</option>
+                                            <option value="hard">Критические</option>
+                                            <option value="medium">Незначительные</option>
+                                            <option value="easy">Стандартные</option>
+                                        </Select>
+                                        <Select onChange={handleStatusChange} name="status">
+                                            <option value="all">Все</option>
+                                            <option value="notSolved">Неисправленные</option>
+                                            <option value="solved">Исправленные</option>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <ProfileStatistic key={statusFilter + hardnessFilter + openComputerId}
+                                    statusFilter={statusFilter} hardnessFilter={hardnessFilter}
+                                    isComputer={true} computerId={openComputerId}/>
                             </DialogPanel>
                         </div>
                     </div>

@@ -12,7 +12,7 @@ const Profile = function(props){
     <div className='profileBlock'>
       <ProfileInfo/>
       <ProfileDataReport/>
-      <ProfileStatistic/>
+      <ProfileStatistic isComputer={false}/>
     </div>
   )
 }

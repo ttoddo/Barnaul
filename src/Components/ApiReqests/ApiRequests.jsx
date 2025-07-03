@@ -140,7 +140,6 @@ export const getBreakdowns = async function (token){
     if (res) {
         let data = await res.json()
         console.log("Breakdowns Seek Success")
-        console.log(data)
         return data
     } else {
         console.log('Breakdowns Seek Error')
