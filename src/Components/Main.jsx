@@ -10,7 +10,7 @@ import Editor from '../pages/Editor'
 const Main = () => {
     return (
         <Routes>
-            <Route exact path='' element={<HomePage/>}></Route>
+            <Route exact path='/' element={<HomePage/>}></Route>
             <Route exact path='/editor' element={<Editor height={window.height} width={window.width}></Editor>}></Route>
             <Route exact path='/signin' element={<LoginForm/>}></Route>
             <Route exact path='/profile' element={<Profile/>}></Route>
