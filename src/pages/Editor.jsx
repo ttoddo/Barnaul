@@ -4,6 +4,7 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
+import "../styles/Editor.css"
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -96,7 +97,6 @@ const Editor = () => {
                 level === parsedRect.levelId && building === parsedRect.buildingId ? parsedRects.push(parsedRect) : parsedRect = {}
             } 
         })
-        console.log(parsedRects)
         return parsedRects
     }, [level, building]);
 
@@ -143,7 +143,6 @@ const Editor = () => {
                 if (!rects) {
                     navigate("/signin")
                 }
-                console.log(rects)
                 let parsedRects = gigaRectParse(rects.response, isComputer, stageId)
                 setRooms(parsedRects)
 
@@ -262,7 +261,7 @@ const Editor = () => {
 
     if (!isLoading && level && building){
         return stageId === '0' ? (
-            <div style={{ position: "relative", width:"100%", height:"100%"}}>
+            <div className="screenCont">
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
                     width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>
@@ -321,38 +320,13 @@ const Editor = () => {
                     <p>{editMode ? 'Выйти из режима редактирования' : 'Войти в режим редактирования'}</p>
 
                 </div>
-                <div style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: 10,
-                    transform: "translateY(-50%)",
-                    width: "110px",
-                    backgroundColor: "lightblue",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-evenly",
-                    alignItems: "center",
-                    borderRadius: "5px"
-
-                }}>
+                <div className="levelsMenu">
                     {buildings[building].map((btn, i) => (
                         <CommonBtn key={i + 1} value={btn.name} onClick={() => handleLevelSwitch(btn.name)}
                             style={i + 1 === level ? {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px", backgroundColor: "blue"} : {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px"}}/>
                     ))}
                 </div>
-                <div style={{
-                    position: "absolute",
-                    top: 10,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    height: "75px",
-                    width: "25%",
-                    backgroundColor: "lightblue",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    alignItems: "center"
-                }}>
+                <div className="buildingsMenu">
                     <CommonBtn value="1 Копрус" inactive={building === 1} onClick={() => handleBuildingSwitch(1)}
                         style={building === 1 ? {width: "45%", height: "90%", backgroundColor: "blue"} : {width: "45%", height: "90%"}}
                     />
@@ -362,7 +336,7 @@ const Editor = () => {
                 </div>
             </div>
         ) : (
-            <div style={{ position: "relative", width:"100%", height:"100%"}}>
+            <div className="screenCont">
                 <Stage key="AudStage"
                     id={stageId}
                     onMouseDown={checkDeselect}
