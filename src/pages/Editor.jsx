@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useReducer } from "react";
 import GigaRect from "../Components/EditorParts/RectComponent" 
-import { Layer, Line, Rect, Stage } from "react-konva";
+import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
@@ -30,19 +30,20 @@ function shadowsReducer(state, action) {
     }
 }
 
-function gridLinesReducer(state, action) {
-    switch (action.type) {
-        case 'init':
-            return action.payload
-        case 'resize':
-            break
-        default:
-            return state
-    }
-}
+// function gridLinesReducer(state, action) {
+//     switch (action.type) {
+//         case 'init':
+//             return action.payload
+//         case 'resize':
+//             break
+//         default:
+//             return state
+//     }
+// }
 
 const Editor = () => {
     let snapSize = 25
+    let floorOverSize = 20
     let canvasSize = {width: window.innerWidth, height: window.innerHeight}
 
     let buildings = {1: [{name: 1}, {name: 2}, {name: 3}, {name: 4}],
@@ -57,8 +58,12 @@ const Editor = () => {
     const [scale, setScale] = useState(1)
 
     const [rooms, setRooms] = useState([])
+    const [audSizes, setAudSizes] = useState({})
     const [shadows, dispatchShadows] = useReducer(shadowsReducer, [])
-    const [gridLines, dispatchGridLines] = useReducer(gridLinesReducer, [])
+    const [floor, setFloor] = useState({})
+
+
+    // const [gridLines, dispatchGridLines] = useReducer(gridLinesReducer, [])
     // Временно отключено в связи с отказом от веб-редактора.
     // const [limits, setLimits] = useState({})
     
@@ -84,7 +89,7 @@ const Editor = () => {
 
             let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
                 X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
-                fill: isComputer ? "lightblue" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null}
+                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null}
             if (isComputer){
                 stageId === parsedRect.audId ? parsedRects.push(parsedRect) : parsedRect = {}
             } else {
@@ -112,17 +117,15 @@ const Editor = () => {
         return {maxX: maxX, minX:minX, maxY:maxY, minY:minY}
     }
 
-    const collectGridLines = useCallback((limitsInside) => {
-        let gridLinesTemp = []
-        for (let x = limitsInside.minX; x <= limitsInside.maxX; x += snapSize){
-            gridLinesTemp.push({key: x+'gridLineX', points: [x, limitsInside.minY, x, limitsInside.maxY]})
-        }
-        for (let y = limitsInside.minY; y <= limitsInside.maxY; y += snapSize){
-            gridLinesTemp.push({key: y+'gridLineY', points: [limitsInside.minX, y, limitsInside.maxX, y]})
-        }
-        return gridLinesTemp
-    }, [snapSize])
+    const collectFloor = useCallback((limitsInside) => {
+        let height = limitsInside.maxY - limitsInside.minY + floorOverSize
+        let width = limitsInside.maxX - limitsInside.minX + floorOverSize
+        let x = limitsInside.minX - floorOverSize / 2
+        let y = limitsInside.minY - floorOverSize / 2
+        return {x, y, width, height}
+    }, [floorOverSize])
 
+    // Основной элемент
     useEffect(() => {
         async function collectInfo() {
             let res = await userInfo(localStorage.getItem('TOKEN'))
@@ -156,17 +159,18 @@ const Editor = () => {
                     }))
                 })
                 let limitsTemp = getLimits(parsedRects)
-                let collectedGridLines = collectGridLines(limitsTemp)
-                dispatchGridLines({
-                    type: 'init',
-                    payload: collectedGridLines
-                })
+                let collectedFloor;
+                if (!isComputer){
+                    collectedFloor = collectFloor(limitsTemp)
+                } else collectedFloor = audSizes
+                
+                setFloor(collectedFloor)
                 // setLimits(limitsTemp)
                 setIsLoading(false)
             } else navigate("/signin")
         }
         collectInfo()
-    }, [gigaRectParse, navigate, collectGridLines, stageId])
+    }, [gigaRectParse, collectFloor, navigate, stageId, audSizes])
 
     const checkEditMode = () => {
         console.log("Войдите в режим редактирования, чтобы изменять объекты!")
@@ -174,6 +178,17 @@ const Editor = () => {
     }
 
     const handleOpenAuditory = (id) => {
+        let width = 0;
+        let height = 0
+        rooms.forEach(room => {
+            if (room.id === id){
+                width = (room.width * 10) + floorOverSize
+                height = (room.height * 10) + floorOverSize
+            } 
+        });
+        let x = -width / 2 
+        let y = -height / 2
+        setAudSizes({x, y, width, height})
         setStageId(id);
     }
     const handleClosedAuditory = (id) => {
@@ -220,6 +235,7 @@ const Editor = () => {
 
     const handleOnClickText = () => {
         setStageId('0')
+        setAudSizes({})
     }
 
     const handleSwitchToEditMode = () => {
@@ -250,15 +266,16 @@ const Editor = () => {
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
                     width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>
-                    <Layer key='GridLayer'>
-                        {gridLines.map((line) =>(
-                            <Line
-                                key={line.key + ' line'}
-                                points={line.points}
-                                stroke="#ddd"
-                                strokeWidth={2}
-                            />
-                        ))}
+                    <Layer key='FloorLayer'>
+                        <Rect 
+                            key='Floor'
+                            id='0'
+                            x={floor.x}
+                            y={floor.y}
+                            width={floor.width}
+                            height={floor.height}
+                            fill='lightblue'
+                        />
                     </Layer>
                     <Layer>
                         {shadows.map((shadow) => (
@@ -309,7 +326,7 @@ const Editor = () => {
                     top: "50%",
                     left: 10,
                     transform: "translateY(-50%)",
-                    width: "120px",
+                    width: "110px",
                     backgroundColor: "lightblue",
                     display: "flex",
                     flexDirection: "column",
@@ -356,15 +373,16 @@ const Editor = () => {
                     scaleY={scale}
                     draggable={true} 
                     offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}>
-                    <Layer key='GridLayer'>
-                        {gridLines.map((line) =>(
-                            <Line
-                                key={line.key + ' line'}
-                                points={line.points}
-                                stroke="#ddd"
-                                strokeWidth={2}
-                            />
-                        ))}
+                    <Layer key='FloorLayer'>
+                        <Rect 
+                            key='Floor'
+                            id='0'
+                            x={floor.x}
+                            y={floor.y}
+                            width={floor.width}
+                            height={floor.height}
+                            fill='lightblue'
+                        />
                     </Layer>
                     <Layer>
                         {shadows.map((shadow) => (
