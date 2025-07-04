@@ -6,7 +6,6 @@ import { getBreakdowns, userInfo } from './ApiReqests/ApiRequests'
 
 const ProfileStatistic = function(props) {
     const [isLoading, setIsLoading] = useState(true) // Здесь состояние загрузки, которое мы меняем после выполнения запросов
-    const [userInformation, setUserInfo] = useState()
     const [error, setError] = useState([])
     function byLevel(a, b){
       return b.level - a.level;
@@ -53,7 +52,7 @@ const ProfileStatistic = function(props) {
           }
         } else {
           for (let i = 0; i < breakdowns.length; i++){
-            if (breakdowns[i].userId === userInformation.id){
+            if (breakdowns[i].userId === user.id){
               let tempBrk = collectBreakdown(breakdowns[i], user)
               tempError.push(tempBrk)
             }
@@ -96,9 +95,8 @@ const ProfileStatistic = function(props) {
             let token = localStorage.getItem('TOKEN') // Наш токен, который потом перенесем в cookies
             let user = await userInfo(token)
             let breakdowns = await getBreakdowns(token) // Два запроса
-
-            setUserInfo(user)
-            await sleep(5000) // Это удалишь, как разберешься, как это работает
+            
+            // await sleep(5000) // Это удалишь, как разберешься, как это работает
             let parsedErrors = parseErrors(breakdowns.response, user, props.isComputer, props.hardnessFilter, props.statusFilter) // Здесь мы собираем ошибки, полученные в запросе в нормальный вид
             setError(parsedErrors) // А тут уже устанавливаем их и только после этого сообщаем, что загрузка завершена.
             setIsLoading(false) // Тут мы меняем состояние загрузки == загрузка закончилась. Все изменения состояний проводят обновление вкладки, но так как прошлые set функции изменялись,

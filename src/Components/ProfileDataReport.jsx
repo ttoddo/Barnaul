@@ -1,38 +1,50 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import '../styles/Profile.css'
 import { getBreakdowns, userInfo } from './ApiReqests/ApiRequests'
 
 const ProfileDataReport = function(props) {
-  const [breakdown, setBreakdowns] = useState()
-  const [userInformation, setUserInfo] = useState()
+  const [isLoading, setIsLoading] = useState(true)
+  const [counts, setCounts]  = useState({count: 0, sCount: 0})
+
+  const countBreakdowns = useCallback((brks, user) => {
+    let count = 0
+    let sCount = 0
+    console.log(brks[0])
+    for (let i = 0; i < brks.length; i++){
+      if (brks[i].userId === user.id) {
+        count ++
+        if (brks[i].isSolved){
+          sCount++
+        }
+      }
+    }
+    return {count, sCount}
+  }, [] )
+
   useEffect(() => {
       async function brbrbr(){
         let breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
-        setBreakdowns(breakdowns)
-      }
-      async function getUserInfo() {
         let res = await userInfo(localStorage.getItem('TOKEN'))
-        setUserInfo(res)
-        }
-      getUserInfo() 
-      brbrbr()
-  }, [])
-  let solvedCount = 0
-  let breakdownCount = 0
-  if (breakdown && userInformation){
-    for (let i = 0; i < breakdown.length; i++){
-      if (breakdown[i].userId === userInformation.id){
-        breakdownCount++
-        if (breakdown[i].isSolved){solvedCount++}
+        
+        let breakdownsCount = countBreakdowns(breakdowns.response, res)
+        console.log(breakdownsCount)
+        setCounts(breakdownsCount)
       }
-    }
+
+      brbrbr()
+      setIsLoading(false)
+
+  }, [isLoading, counts])
+  console.log(counts)
+  if (!isLoading){
     return (
       <div className='profileData'>
-          <label className='errorFound'>Ошибок найдено: <span>{breakdownCount}</span></label>
-          <label className='errorSolved'>Ошибок решено: <span>{solvedCount}</span></label>
+          <label className='errorFound'>Ошибок найдено: <span>{counts.count}</span></label>
+          <label className='errorSolved'>Ошибок решено: <span>{counts.sCount}</span></label>
       </div>
     )
   }
+  else return (<div>Sosal?</div>)
 }
 
 export default ProfileDataReport

@@ -14,12 +14,9 @@ const refreshUser = async function (token, refreshToken) {
         token: token,
         refreshToken: refreshToken
     })
-    console.log(getRefreshSettings)
     try {
         const res = await fetch(api + '/auth/refresh-token', getRefreshSettings)
-        console.log(res)
         const data = await res.json()
-        console.log(data)
         localStorage.setItem('TOKEN', data.token)
         localStorage.setItem('REFRESH_TOKEN', data.refreshToken)
         return res
@@ -31,14 +28,14 @@ const refreshUser = async function (token, refreshToken) {
 
 const request = async function ( route, settings ) {
     let res = await fetch(route, settings)
-    if (res.status === 200){
+    if (res.status === 200 || res.status === 201){
         return res
     } else {
         const refreshRes = await refreshUser(localStorage.getItem("TOKEN"), localStorage.getItem("REFRESH_TOKEN"))
-        if (refreshRes.status === 200){
+        if (refreshRes.status === 200 || refreshRes.status === 201){
             settings.headers['Authorization'] = 'Bearer ' + localStorage.getItem("TOKEN")
             res = await fetch(route, settings)
-            if (res.status === 200){
+            if (res.status === 200 || res.status === 201){
                 return res
             } else if (res.status === 400 || res.status === 401){
                 console.log("Проблема с JWT")
@@ -143,6 +140,22 @@ export const getBreakdowns = async function (token){
         return data
     } else {
         console.log('Breakdowns Seek Error')
+        return false
+    }
+}
+
+export const addBreakdown = async function (token, info) {
+    let addBreakdownSettings = JSON.parse(JSON.stringify(settings))
+    addBreakdownSettings.method = 'POST'
+    addBreakdownSettings.headers['Authorization'] = 'Bearer ' + token
+    addBreakdownSettings.body = JSON.stringify(info)
+    let route = api + '/breakdown'
+    const res = await request(route, addBreakdownSettings)
+    if (res) {
+        console.log("Breakdown Add Success")
+        return true
+    } else {
+        console.log('Breakdown Add Error')
         return false
     }
 }
