@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback, useReducer } from "react";
 import GigaRect from "../Components/EditorParts/RectComponent" 
 import { Layer, Rect, Stage } from "react-konva";
-import { getAuds, userInfo, getComputers, addBreakdown } from "../Components/ApiReqests/ApiRequests";
+import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
 import { Button, Dialog, DialogPanel, DialogTitle, Select, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -99,10 +99,11 @@ const Editor = () => {
 
     const navigate = useNavigate()
 
-    const gigaRectParse = useCallback((rectsArr, isComputer, stageId) => {
+    const gigaRectParse = useCallback((rectsArr, isComputer, stageId, breakdowns, comps) => {
         let parsedRects = []
         rectsArr.forEach(rect => {
             // Room example: {floor: 0, isComputer: true, name: "218", position: "0;0", size: "2;2", buildingId: 1}
+            let circles = {1: {color: "yellow", count: 0}, 2: {color: "orange", count: 0}, 3: {color: "red", count: 0}}
             let coords = rect.position.split(";")
             let sizes = rect.size.split(";")
             let width = parseFloat(sizes[0].replace(",", ".")) * (isComputer ? 1000 : 100)
@@ -111,9 +112,32 @@ const Editor = () => {
             let x = (parseFloat(coords[0].replace(",", ".")) * (isComputer ? 1000 : 100)) - width / 2
             let y = (parseFloat(coords[1].replace(",", ".")) * (isComputer ? 1000 : 100)) + height / 2
 
+            if (isComputer){
+                breakdowns.forEach(brk => {
+                    if (brk.computerId === rect.id) {
+                        circles[brk.level].count += 1;
+                    }
+                });
+            } else {
+                let compsIds = []
+                comps.forEach(comp => {
+                    if (comp.auditoriumId === rect.id){
+                        compsIds.push(comp.id)
+                    }
+                });
+                breakdowns.forEach(brk => {
+                    if (compsIds.includes(brk.computerId)) {
+                        circles[brk.level].count += 1;
+                    }
+                });
+            }
+            console.log(Object.keys(circles))
             let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
                 X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
-                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null}
+                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null,
+                circles
+            }
+            
             if (isComputer){
                 stageId === parsedRect.audId ? parsedRects.push(parsedRect) : parsedRect = {}
             } else {
@@ -148,25 +172,56 @@ const Editor = () => {
         return {x, y, width, height}
     }, [floorOverSize])
 
+    const collectBreakDownInfo = useCallback(() => {
+        let hardnessLevel
+        switch (hardnessInput.value){
+            case "easy":
+                hardnessLevel = 1
+                break;
+            case "medium":
+                hardnessLevel = 2
+                break;
+            case "hard":
+                hardnessLevel = 3
+                break;
+            default:
+                break;
+        }
+        return {
+                description: breakdownTextInput,
+                isSolved: false,
+                level: hardnessLevel,
+                computerId: openComputerId,
+                userId: currentUserId
+                }
+    }, [breakdownTextInput, openComputerId, currentUserId, hardnessInput])
+
     // Основной элемент
     useEffect(() => {
         async function collectInfo() {
             let res = await userInfo(localStorage.getItem('TOKEN'))
 
             if (res){
-                let rects
                 let isComputer
                 if (stageId === '0'){
-                    rects = await getAuds(localStorage.getItem('TOKEN'))
                     isComputer = false
                 } else {
-                    rects = await getComputers(localStorage.getItem('TOKEN'))
                     isComputer = true
                 }
-                if (!rects) {
+                let rects = await getAuds(localStorage.getItem('TOKEN'))
+                let comps = await getComputers(localStorage.getItem('TOKEN'))
+                if (!rects || !comps) {
                     navigate("/signin")
                 }
-                let parsedRects = gigaRectParse(rects.response, isComputer, stageId)
+
+                let breakdowns = await getBreakdowns(localStorage.getItem('TOKEN'))
+                let parsedRects
+                if (isComputer){
+                    parsedRects = gigaRectParse(comps.response, isComputer, stageId, breakdowns.response, comps.response)
+                } else{
+                    parsedRects = gigaRectParse(rects.response, isComputer, stageId, breakdowns.response, comps.response)
+                }
+
                 setRooms(parsedRects)
 
                 dispatchShadows({
@@ -180,6 +235,7 @@ const Editor = () => {
                         fill: rect.fill
                     }))
                 })
+
                 let limitsTemp = getLimits(parsedRects)
                 let collectedFloor;
                 if (!isComputer){
@@ -190,27 +246,7 @@ const Editor = () => {
                 setCurrentUserId(res.id)
 
                 if (addBreakdownFlag) {
-                    let hardnessLevel
-                    switch (hardnessInput.value){
-                        case "easy":
-                            hardnessLevel = 1
-                            break;
-                        case "medium":
-                            hardnessLevel = 2
-                            break;
-                        case "hard":
-                            hardnessLevel = 3
-                            break;
-                        default:
-                            break;
-                    }
-                    let info = {
-                    description: breakdownTextInput,
-                    isSolved: false,
-                    level: hardnessLevel,
-                    computerId: openComputerId,
-                    userId: currentUserId
-                    }
+                    let info = collectBreakDownInfo()
                     let addBrdRes = await addBreakdown(localStorage.getItem("TOKEN"), info)
                     if (!addBrdRes) {
                         setIsMistake(true)
@@ -333,7 +369,7 @@ const Editor = () => {
     const handleAddBreakdown = () => {
         setAddBreakdownFlag(true)
     }
-
+    //Галочка не работает из-за того, что data-selected делает полное сравнение, а у hardness И hardnessFilter разные указатели.. 
     if (!isLoading && level && building){
         return stageId === '0' ? (
             <div className="screenCont">
@@ -383,6 +419,7 @@ const Editor = () => {
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
                             dragMove={editMode ? handleDragMove : checkEditMode}
+                            circles={room.circles}
                             onChange={(newAttrs) => {
                                 const rms = rooms.slice()
                                 rms[i] = newAttrs
@@ -465,6 +502,7 @@ const Editor = () => {
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
                             dragMove={editMode ? handleDragMove : checkEditMode}
+                            circles={room.circles}
                             onChange={(newAttrs) => {
                                 const rms = rooms.slice()
                                 rms[i] = newAttrs
@@ -510,7 +548,7 @@ const Editor = () => {
                                                         value={hardness} 
                                                         className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:backdrop-blur-sm"
                                                     >
-                                                        <CheckIcon className="invisible size-4  group-data-selected:visible"/>
+                                                        {/* <CheckIcon className="invisible size-4 group-data-selected:visible"/> */}
                                                         <div className="text-sm/6 ">{hardness.name[0]}</div>
                                                     </ListboxOption>
                                                 ))}
@@ -541,7 +579,7 @@ const Editor = () => {
                                                         value={status} 
                                                         className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:backdrop-blur-sm"
                                                     >
-                                                        <CheckIcon className="invisible size-4  group-data-selected:visible"/>
+                                                        {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
                                                         <div className="text-sm/6 ">{status.name}</div>
                                                     </ListboxOption>
                                                 ))}
@@ -597,9 +635,9 @@ const Editor = () => {
                                                         <ListboxOption
                                                             key={hardness.name[1]}
                                                             value={hardness} 
-                                                            className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:backdrop-blur-sm"
+                                                            className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:bg-slate/60"
                                                         >
-                                                            <CheckIcon className="invisible size-4  group-data-selected:visible"/>
+                                                            {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
                                                             <div className="text-sm/6 ">{hardness.name[1]}</div>
                                                         </ListboxOption>
                                                     ))}

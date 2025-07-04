@@ -3,7 +3,7 @@ import styles from './ErrorBlck.module.css'
 
 
 
-const ErrorBlock =function(props) {
+const ErrorBlock = function(props) {
   return (
     <div className={styles.error}>
         <div className={styles.errorInfo}>

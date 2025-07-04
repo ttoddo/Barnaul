@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Group, Rect, Text, Circle, Transformer } from "react-konva";
 
-const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode}) => {
+const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode, circles}) => {
     const shapeRef = useRef();
     const trRef = useRef();
   
@@ -71,19 +71,20 @@ const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragSt
           }}
         >
             <Rect fill={shapeProps.fill} width={shapeProps.width} height={shapeProps.height} cornerRadius={15}/>
-
-            <Circle fill={"yellow"} listening={false}
-              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
-              x={shapeProps.width - (shapeProps.width / 25) * 1}/>
-
-            <Circle fill={"orange"} listening={false}
-              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
-              x={shapeProps.width - (shapeProps.width / 25) * 2}/>
-
-            <Circle fill={"red"} listening={false}
-              height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
-              x={shapeProps.width - (shapeProps.width / 25) * 3}/>
-              
+            {Object.keys(circles).map((circle, i) => (
+              <Group height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
+                  x={shapeProps.width - (shapeProps.width / 25) * ((i+1)*2)} key={"group " + i}>
+                <Circle key={"circle " + i} fill={circles[circle].color} listening={false}
+                  height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}/>
+                
+                <Text listening={false} height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
+                  key={"text " + i} text={circles[circle].count} fontSize={(((shapeProps.width + shapeProps.height) / 20)/10)*7.5}
+                  x={((shapeProps.width + shapeProps.height) / 20)/(-2)}
+                  y={((shapeProps.width + shapeProps.height) / 20)/(-2)}
+                  verticalAlign="middle" align="center"
+                />
+              </Group>
+            ))}  
             <Text text={shapeProps.name} fontSize={(shapeProps.width + shapeProps.height) / 20} width={shapeProps.width} height={shapeProps.height} verticalAlign="middle" align="center"></Text>
         </Group>
         {isSelected && (

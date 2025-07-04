@@ -9,7 +9,6 @@ const ProfileDataReport = function(props) {
   const countBreakdowns = useCallback((brks, user) => {
     let count = 0
     let sCount = 0
-    console.log(brks[0])
     for (let i = 0; i < brks.length; i++){
       if (brks[i].userId === user.id) {
         count ++
@@ -27,15 +26,12 @@ const ProfileDataReport = function(props) {
         let res = await userInfo(localStorage.getItem('TOKEN'))
         
         let breakdownsCount = countBreakdowns(breakdowns.response, res)
-        console.log(breakdownsCount)
         setCounts(breakdownsCount)
+        setIsLoading(false)
       }
 
       brbrbr()
-      setIsLoading(false)
-
   }, [isLoading, counts])
-  console.log(counts)
   if (!isLoading){
     return (
       <div className='profileData'>
@@ -44,7 +40,7 @@ const ProfileDataReport = function(props) {
       </div>
     )
   }
-  else return (<div>Sosal?</div>)
+  else return (<div>Помогите</div>)
 }
 
 export default ProfileDataReport
