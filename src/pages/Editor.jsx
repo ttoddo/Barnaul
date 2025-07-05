@@ -4,7 +4,7 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
-import { Button, Dialog, DialogPanel, DialogTitle, Select, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react'
+import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
@@ -372,13 +372,7 @@ const Editor = () => {
     //Галочка не работает из-за того, что data-selected делает полное сравнение, а у hardness И hardnessFilter разные указатели.. 
     if (!isLoading && level && building){
         return stageId === '0' ? (
-            <div className="screenCont">
-                <Button
-                    onClick={() => setisComputerOpen(true)}
-                    className="rounded-md bg-black/20 px-4 py-2 text-sm font-medium text-white focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-black/30"
-                >
-                    Open dialog
-                </Button>   
+            <div className="screenCont">   
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
                     width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>

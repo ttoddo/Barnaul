@@ -16,13 +16,14 @@ const Header = function(){
                 setUserInfo(res)
                 setIsLoading(false)
             } else {
+                console.log("пзида")
                 let user = {role: null}
                 setUserInfo(user)
                 setIsLoading(false)
             }
             }
         getUserInfo()
-    }, [])
+    }, [userInfo])
     const navigate = useNavigate()
     function handleProfileClick() {
         navigate('/profile')
@@ -52,48 +53,50 @@ const Header = function(){
                 </div>
             </div>
         )
-    } else 
-    if (userInformation.role === 'ROLE_ADMIN'){
+    } else if (!isLoading) {
+        if (userInformation.role === 'ROLE_ADMIN'){
+            return (
+                <div className='header'>
+                    <div className='headerContent'>
+                        <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
+                        <div className='headerBtns'>
+                            <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                            <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
+                            <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
+                            <HeaderBtn value='Админка' onClick={handleAdminClick}/>
+                            <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
+                        </div>
+                    </div>
+                </div>
+            )}
+        else if (userInformation.role === 'ROLE_USER') {
+            return (
+                <div className='header'>
+                    <div className='headerContent'>
+                        <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
+                        <div className='headerBtns'>
+                            <HeaderBtn value='Главная' onClick={handleHomeClick}/>
+                            <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
+                            <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
+                            <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
+                        </div>
+                    </div>
+                </div>
+            )
+        } else {
         return (
             <div className='header'>
                 <div className='headerContent'>
                     <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
                     <div className='headerBtns'>
                         <HeaderBtn value='Главная' onClick={handleHomeClick}/>
-                        <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
-                        <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
-                        <HeaderBtn value='Админка' onClick={handleAdminClick}/>
-                        <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
+                        <HeaderBtn value='Вход' onClick={handleSignInClick}/>
                     </div>
                 </div>
             </div>
         )}
-    else if (userInformation.role === 'ROLE_USER') {
-        return (
-            <div className='header'>
-                <div className='headerContent'>
-                    <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
-                    <div className='headerBtns'>
-                        <HeaderBtn value='Главная' onClick={handleHomeClick}/>
-                        <HeaderBtn value='Редактор' onClick={handleEditorClick}/>
-                        <HeaderBtn value='Профиль' onClick={handleProfileClick}/>
-                        <HeaderBtn value='Выход' onClick={handleLogOutClick}/>
-                    </div>
-                </div>
-            </div>
-        )
-    } else
-    return (
-        <div className='header'>
-            <div className='headerContent'>
-                <img src={logo}  alt="logo" onClick={handleHomeClick} style={{cursor: 'pointer'}}/>
-                <div className='headerBtns'>
-                    <HeaderBtn value='Главная' onClick={handleHomeClick}/>
-                    <HeaderBtn value='Вход' onClick={handleSignInClick}/>
-                </div>
-            </div>
-        </div>
-    )
+    }
+    
 }
 
 export default Header
