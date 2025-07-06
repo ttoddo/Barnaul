@@ -4,7 +4,7 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
-import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react'
+import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton} from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
@@ -63,9 +63,7 @@ const Editor = () => {
         {value: "solved", name: "Исправленные"},
         {value: "notSolved", name: "Неисправленные"}
     ]
-
-
-
+    let theme = localStorage.getItem('THEME')
 
     const [isLoading, setIsLoading] = useState(true)
     const [currentUserId, setCurrentUserId] = useState()
@@ -131,11 +129,10 @@ const Editor = () => {
                     }
                 });
             }
-            console.log(Object.keys(circles))
             let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
                 X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
-                fill: isComputer ? "gray" : rect.isComputer ? "red" : "blue", audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null,
-                circles
+                audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null,
+                circles, isComputer, openable: isComputer ? null : rect.isComputer ? true : false
             }
             
             if (isComputer){
@@ -372,32 +369,33 @@ const Editor = () => {
     //Галочка не работает из-за того, что data-selected делает полное сравнение, а у hardness И hardnessFilter разные указатели.. 
     if (!isLoading && level && building){
         return stageId === '0' ? (
-            <div className="screenCont">   
+            <div className="screenCont h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">   
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
-                    width={canvasSize.width} height={canvasSize.height * 0.85} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
+                    width={canvasSize.width} height={canvasSize.height - 144} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>
                     <Layer key='FloorLayer'>
-                        <Rect 
+                        <Rect
                             key='Floor'
                             id='0'
                             x={floor.x}
                             y={floor.y}
                             width={floor.width}
                             height={floor.height}
-                            fill='lightblue'
+                            fill={theme === 'light' ? "#E2E8F0" : "#28272D"} 
+                            cornerRadius={8}
                         />
                     </Layer>
                     <Layer>
                         {shadows.map((shadow) => (
-                        <Rect
+                        <Rect 
                             key={shadow.id+1000}
                             id={shadow.id}
                             x={shadow.X}
                             y={shadow.Y}
                             width={shadow.width}
                             height={shadow.height}
-                            fill={shadow.fill}
-                            cornerRadius={15}
+                            fill={shadow.isComputer ? theme === 'light' ? "#0C86FF" : "#5696FD" : shadow.openable ? theme === "light" ? "#0C86FF" : "#5696FD" : theme === "light" ? "#314158" : "#646A7C"}
+                            cornerRadius={8}
                             opacity={0.45}
                         />
                     ))}
@@ -408,7 +406,8 @@ const Editor = () => {
                             snapSize={snapSize}
                             shapeProps={room}
                             isSelected={room.id === selectedId}
-                            onDblClick={room.fill === "red" ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
+                            fillC={room.isComputer ? theme === 'light' ? "#0C86FF" : "#5696FD" : room.openable ? theme === "light" ? "#0C86FF" : "#5696FD" : theme === "light" ? "#314158" : "#646A7C"}
+                            onDblClick={room.openable ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
                             onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
@@ -432,29 +431,43 @@ const Editor = () => {
                     <p>{editMode ? 'Выйти из режима редактирования' : 'Войти в режим редактирования'}</p>
 
                 </div>
-                <div className="levelsMenu">
+                <div className="absolute top-[50%] translate-y-[-50%] w-[60px] h-[420px] bg-bgDark dark:bg-bgDarkD
+                    flex flex-col items-start gap-[20px] transition ease-in-out duration-500
+                    rounded-r-[8px] pt-[20px] pb-[20px]
+                    ">
                     {buildings[building].map((btn, i) => (
-                        <CommonBtn key={i + 1} value={btn.name} onClick={() => handleLevelSwitch(btn.name)}
-                            style={i + 1 === level ? {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px", backgroundColor: "blue"} : {height: "100px", width: "95%", marginTop: "5px", marginBottom: "5px"}}/>
+                        <Button className={i + 1 === level ? "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-primary dark:bg-primaryD" :
+                            "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-bgLight dark:bg-bgLightD"
+                        } key={i + 1} value={btn.name} onClick={() => handleLevelSwitch(btn.name)}>{btn.name}</Button>
                     ))}
                 </div>
-                <div className="buildingsMenu">
-                    <CommonBtn value="1 Копрус" inactive={building === 1} onClick={() => handleBuildingSwitch(1)}
-                        style={building === 1 ? {width: "45%", height: "90%", backgroundColor: "blue"} : {width: "45%", height: "90%"}}
-                    />
-                    <CommonBtn value="2 Корпус" inactive={building === 2} onClick={() => handleBuildingSwitch(2)}
-                        style={building === 2 ? {width: "45%", height: "90%", backgroundColor: "blue"} : {width: "45%", height: "90%"}}
-                    /> 
+                <div className="absolute bottom-[-1px] left-[50%] translate-x-[-50%] h-[85px] w-[380px] rounded-t-[16px] bg-bgDark dark:bg-bgDarkD
+                    flex flex-col transition ease-in-out duration-500
+                ">
+                    <div className="flex items-center justify-center w-full h-[45px]">
+                        <p className="font-bold text-tLight dark:text-tLightD text-[24px]">Корпус</p>
+                    </div>
+                    <div className="pl-[20px] pr-[20px] flex flex-row gap-[20px]">
+                        <Button className={building === 1 ? "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-primary dark:bg-primaryD" :
+                            "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-bgLight dark:bg-bgLightD"} value="1 Копрус" onClick={() => handleBuildingSwitch(1)}
+        
+                        >1</Button>
+                        <Button className={building === 2 ? "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-primary dark:bg-primaryD" :
+                            "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-bgLight dark:bg-bgLightD"} value="2 Корпус" onClick={() => handleBuildingSwitch(2)}
+                            
+                        >2</Button> 
+                    </div>
+
                 </div>
             </div>
         ) : (
-            <div className="screenCont">
+            <div className="screenCont h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">
                 <Stage key="AudStage"
                     id={stageId}
                     onMouseDown={checkDeselect}
                     onWheel={handleWheel}
                     width={canvasSize.width}
-                    height={canvasSize.height * 0.85}
+                    height={canvasSize.height - 144}
                     scaleX={scale}
                     scaleY={scale}
                     draggable={true} 
@@ -467,7 +480,9 @@ const Editor = () => {
                             y={floor.y}
                             width={floor.width}
                             height={floor.height}
-                            fill='lightblue'
+                            fill={localStorage.getItem("THEME") === 'light' ? "#E2E8F0" : "#28272D"}
+                            cornerRadius={8}
+                            
                         />
                     </Layer>
                     <Layer>
@@ -479,8 +494,8 @@ const Editor = () => {
                             y={shadow.Y}
                             width={shadow.width}
                             height={shadow.height}
-                            fill={shadow.fill}
-                            cornerRadius={15}
+                            fill={theme === 'light' ? "#0C86FF" : "#5696FD"}
+                            cornerRadius={8}
                             opacity={0.45}
                         />
                     ))}
@@ -494,6 +509,7 @@ const Editor = () => {
                             onDblClick={() => handleOpenComputer(room.id)}
                             onSelect={editMode ? () => setSelectedId(room.id) : checkEditMode}
                             changeShadow={changeShadow}
+                            fillC={theme === 'light' ? "#0C86FF" : "#5696FD"}
                             dragStart={editMode ? handleDragStart : checkEditMode}
                             dragMove={editMode ? handleDragMove : checkEditMode}
                             circles={room.circles}

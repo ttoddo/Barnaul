@@ -16,7 +16,7 @@ const ProfileInfo = function(props) {
           setIsLoading(false)
           }
       getUserInfo()
-  }, [isLoading, userInformation])
+  }, [])
 
   const navigate = useNavigate()
   function handleLogOutClick(){

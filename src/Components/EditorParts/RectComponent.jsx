@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Group, Rect, Text, Circle, Transformer } from "react-konva";
 
-const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode, circles}) => {
+const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode, circles, fillC}) => {
     const shapeRef = useRef();
     const trRef = useRef();
   
@@ -70,7 +70,7 @@ const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragSt
             changeShadow(shadowPipe)
           }}
         >
-            <Rect fill={shapeProps.fill} width={shapeProps.width} height={shapeProps.height} cornerRadius={15}/>
+            <Rect fill={fillC} width={shapeProps.width} height={shapeProps.height} cornerRadius={8}/>
             {Object.keys(circles).map((circle, i) => (
               <Group height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
                   x={shapeProps.width - (shapeProps.width / 25) * ((i+1)*2)} key={"group " + i}>

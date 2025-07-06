@@ -1,4 +1,4 @@
-const api = "https://bgitusec.online:7111/api"
+const api = "https://bgitu-fix.ru:7111/api"
 const settings = {
   method: 'POST',
   headers: {

@@ -31,7 +31,7 @@ const ProfileDataReport = function(props) {
       }
 
       brbrbr()
-  }, [isLoading, counts])
+  }, [])
   if (!isLoading){
     return (
       <div className='profileData'>
