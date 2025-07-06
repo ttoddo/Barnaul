@@ -7,7 +7,7 @@ import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Text
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { CheckIcon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -528,11 +528,11 @@ const Editor = () => {
                 </Stage>
                 <Dialog open={isComputerOpen} as="div" data-theme={theme} className="absolute z-10 focus:outline-none" onClose={handleCloseComputer}>
                     <div className="relative focus:outline-none">
-                        <div className="fixed h-[700px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 flex items-center justify-center">
+                        <div className="fixed h-[720px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 flex items-center justify-center">
                             <DialogPanel transition
                                 className="w-full space-y-[30px] p-4 max-w-3xl h-full rounded-[16px] bg-bgModal dark:bg-bgModalD duration-500 ease-in-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
-                                <DialogTitle className="flex flex-col gap-[20x] mb-[30px]">
+                                <DialogTitle className="flex flex-col gap-[20px] mb-[30px]">
                                     <p className="font-semibold text-[32px] text-tLight dark:text-tLightD">{openComputerName}</p>
                                     <p className="text-[24px] text-tLight dark:text-tLightD ">Аудитория: {openComputerAud}</p>
                                 </DialogTitle>
@@ -546,7 +546,7 @@ const Editor = () => {
                                                 >
                                                 {hardnessFilter.name[0]}
                                                 <ChevronDownIcon
-                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
+                                                    className="group pointer-events-none absolute top-3.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
                                                     aria-hidden="true"
                                                 />
                                             </ListboxButton>
@@ -575,7 +575,7 @@ const Editor = () => {
                                                 >
                                                 {statusFilter.name}
                                                 <ChevronDownIcon
-                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
+                                                    className="group pointer-events-none absolute top-3.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
                                                     aria-hidden="true"
                                                 />
                                             </ListboxButton>
@@ -614,46 +614,49 @@ const Editor = () => {
                         </div>
                     </div>
                 </Dialog>
-                <Dialog open={isBreakdownAdd} as="div" className="absolute z-20 focus:outline-none" onClose={handleBreakdownAddClose}>
+                <Dialog open={isBreakdownAdd} as="div" data-theme={theme} className="absolute z-20 focus:outline-none" onClose={handleBreakdownAddClose}>
                     <div className="relative focus:outline-none">
                         <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 overflow-y-auto flex items-center justify-center">
                             <DialogPanel transition
-                                className="w-full h-full max-w-2xl flex items-center justify-center rounded-md bg-slate-600/35 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                                className="w-full h-full max-w-2xl flex flex-col items-center justify-center rounded-[16px] bg-bgModal dark:bg-bgModalD duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
-                                <Fieldset className="space-y-12 w-10/12 rounded-md">
-                                    <Legend key={"legend" + isMistake} className={"text-base/7 font-semibold " + (isMistake ? "border-2 border-red-600" : "border-none")}>Сообщить об ошибке</Legend>
+                                <DialogTitle className="w-full pl-[30px] pr-[30px] pt-[30px] flex flex-row justify-between gap-[20x] mb-[30px]">
+                                    <p className="font-semibold text-[32px] text-tLight dark:text-tLightD py-1.5">Добавление ошибки</p>
+                                    <div className="size-[60px] bg-bgLight dark:bg-bgLightD rounded-[8px]" onClick={handleBreakdownAddClose}>
+                                        <XMarkIcon className="size-[60px] fill-black dark:fill-white" />
+                                    </div>
+                                </DialogTitle>
+                                <Fieldset className="odd:space-y-[30px] h-full even:space-y-[15px] w-full pl-[30px] pr-[30px] ">
                                     <Field>
-                                        <Label>
-                                            Тип ошибки: 
+                                        <Label className="font-bold text-[20px] text-tLight dark:text-tLightD">
+                                            Тип ошибки
                                         </Label>
                                         <div className="relative mt-3">
                                             <Listbox value={hardnessInput} onChange={setHardnessInput}>
                                                 <ListboxButton
-                                                    className={clsx(
-                                                        'relative block w-full rounded-lg bg-white/5 py-1.5 pr-8 pl-3 text-left text-sm/6 ',
-                                                        'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25'
-                                                    )}
+                                                    className=
+                                                    'relative w-[220px] h-[40px] py-1 rounded-lg bg-bgLight dark:bg-bgLightD pl-[10px] text-tLight dark:text-tLightD text-left text-[20px]'
                                                     >
                                                     {hardnessInput.name[1]}
                                                     <ChevronDownIcon
-                                                        className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-black/60"
+                                                        className="group pointer-events-none absolute top-3.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
                                                         aria-hidden="true"
                                                     />
                                                 </ListboxButton>
                                                 <ListboxOptions anchor="bottom" transition 
                                                     className={clsx(
-                                                        'w-(--button-width) rounded-xl border border-white/5 bg-white/5 p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
-                                                        'transition duration-100 ease-in data-leave:data-closed:opacity-0'
+                                                        'w-[220px] rounded-[8px] bg-bgLight dark:bg-bgLightD p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
+                                                        'transition duration-100 ease-in data-leave:data-closed:opacity-0 flex flex-col gap-1'
                                                     )}
                                                 >   
                                                     {hardnesses.slice(1).map((hardness) => (
                                                         <ListboxOption
                                                             key={hardness.name[1]}
                                                             value={hardness} 
-                                                            className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:bg-slate/60"
+                                                            className="hover:scale-102 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                         >
                                                             {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
-                                                            <div className="text-sm/6 ">{hardness.name[1]}</div>
+                                                            <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full ">{hardness.name[1]}</div>
                                                         </ListboxOption>
                                                     ))}
                                                 </ListboxOptions>
@@ -661,15 +664,17 @@ const Editor = () => {
                                         </div>
                                     </Field>
                                     <Field>
-                                        <Label>Описание ошибки</Label>
-                                        <Textarea onChange={e => setBreakdownTextInput(e.target.value)} className={clsx(
-                                            'mt-3 block w-full resize-none rounded-lg border-none bg-white/8 px-3 py-1.5 text-sm/6 ',
-                                            'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25'
-                                            )} rows={4}/>
+                                        <Label className="font-bold text-[20px] text-tLight dark:text-tLightD outline-none">Описание ошибки</Label>
+                                        <Textarea placeholder="Введите описание ошибки" onChange={e => setBreakdownTextInput(e.target.value)}
+                                            className="placeholder-tDark text-[20px] text-tLight
+                                                dark:text-tLightD w-full outline-none bg-bgMiddle dark:bg-bgMiddleD
+                                                rounded-[8px] p-[10px] mt-[15px] resize-none"
+                                            rows={4}/>
                                     </Field>
                                     <Field>
-                                        <Button className="bg-slate-300 hover:bg-slate-400 p-2 rounded-lg" onClick={handleAddBreakdown}>
-                                            Добавить ошибку
+                                        <Button className="bg-primary dark:bg-primaryD h-[40px] w-[190px] rounded-[8px] active:scale-105 hover:scale-110
+                                            text-[20px] text-tLight dark:text-tLightD" onClick={handleAddBreakdown}>
+                                            Добавить
                                         </Button>
                                     </Field>
                                 </Fieldset>
@@ -677,13 +682,8 @@ const Editor = () => {
                         </div>
                     </div>
                 </Dialog> 
-                <div onClick={handleOnClickText} style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    cursor: 'pointer'
-                }}>
-                    <p>{'ЗАБЕРИТЕ МЕНЯ ДОМОЙЙЙЙЙ'}</p>
+                <div onClick={handleOnClickText} className="absolute transition-colors duration-500 ease-in-out top-[15px] right-[15px] size-[80px] rounded-[8px] bg-bgDark dark:bg-bgDarkD hover:scale-110 active:scale-105">
+                    <XMarkIcon className="size-[80px] fill-black dark:fill-white py-0.5"/>
                 </div>
             </div>
         )

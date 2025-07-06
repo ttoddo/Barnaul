@@ -1,5 +1,4 @@
 import React from 'react'
-import styles from './ErrorBlck.module.css'
 import { Button } from '@headlessui/react'
 
 
@@ -26,21 +25,7 @@ const ErrorBlock = function(props) {
                 <p className="w-full h-full text-tLight dark:text-tLightD text-[20px] py-1">Удалить</p>
               </Button>
             </div>
-
-
-
-
-
-{/* 
-            <div className={styles.errorText}>
-                <p className={styles.errorTitle}>{props.error.title}</p>
-                <label className={styles.errorSubInfo}>
-                    <span>{props.error.date}</span>
-                    <span>{props.error.username}</span>
-                </label>
-            </div> */}
         </div>
-        {/* <p className={styles.errorStatus}>{props.error.status}</p> */}
     </div>
   )
 }
