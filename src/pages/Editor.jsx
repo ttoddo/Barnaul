@@ -3,12 +3,11 @@ import GigaRect from "../Components/EditorParts/RectComponent"
 import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
-import CommonBtn from "../Components/UI/CommonButton/CommonBtn";
 import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton} from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -85,6 +84,8 @@ const Editor = () => {
 
     const [isComputerOpen, setisComputerOpen] = useState(false)
     const [openComputerId, setOpenComputerId] = useState(null)
+    const [openComputerName, setOpenComputerName] = useState(null)
+    const [openComputerAud, setOpenComputerAud] = useState(null)
     const [isBreakdownAdd, setIsBreakdownAdd] = useState(false)
 
     const [hardnessInput, setHardnessInput] = useState(hardnesses[1])
@@ -348,13 +349,17 @@ const Editor = () => {
         }
     }
 
-    const handleOpenComputer = (id) => {
+    const handleOpenComputer = (id, name, aud) => {
         setisComputerOpen(true)
         setOpenComputerId(id)
+        setOpenComputerName(name)
+        setOpenComputerAud(aud)
     }
     const handleCloseComputer = () => {
         setisComputerOpen(false)
         setOpenComputerId(null)
+        setOpenComputerName(null)
+        setOpenComputerAud(null)
         setStatusFilter({value: "all", name: "Все"})
         setHardnessFilter({value: "all", name: ["Все"]})
     }
@@ -381,7 +386,7 @@ const Editor = () => {
                             y={floor.y}
                             width={floor.width}
                             height={floor.height}
-                            fill={theme === 'light' ? "#E2E8F0" : "#28272D"} 
+                            fill={theme === 'light' ? "#eff6ff" : "#28272D"} 
                             cornerRadius={8}
                         />
                     </Layer>
@@ -394,7 +399,7 @@ const Editor = () => {
                             y={shadow.Y}
                             width={shadow.width}
                             height={shadow.height}
-                            fill={shadow.isComputer ? theme === 'light' ? "#0C86FF" : "#5696FD" : shadow.openable ? theme === "light" ? "#0C86FF" : "#5696FD" : theme === "light" ? "#314158" : "#646A7C"}
+                            fill={shadow.isComputer ? theme === 'light' ? "#60a5fa" : "#5696FD" : shadow.openable ? theme === "light" ? "#60a5fa" : "#5696FD" : "#646A7C"}
                             cornerRadius={8}
                             opacity={0.45}
                         />
@@ -406,7 +411,7 @@ const Editor = () => {
                             snapSize={snapSize}
                             shapeProps={room}
                             isSelected={room.id === selectedId}
-                            fillC={room.isComputer ? theme === 'light' ? "#0C86FF" : "#5696FD" : room.openable ? theme === "light" ? "#0C86FF" : "#5696FD" : theme === "light" ? "#314158" : "#646A7C"}
+                            fillC={room.isComputer ? theme === 'light' ? "#60a5fa" : "#5696FD" : room.openable ? theme === "light" ? "#60a5fa" : "#5696FD" : "#646A7C"}
                             onDblClick={room.openable ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
                             onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
                             changeShadow={changeShadow}
@@ -436,28 +441,27 @@ const Editor = () => {
                     rounded-r-[8px] pt-[20px] pb-[20px]
                     ">
                     {buildings[building].map((btn, i) => (
-                        <Button className={i + 1 === level ? "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-primary dark:bg-primaryD" :
-                            "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-bgLight dark:bg-bgLightD"
+                        <Button className={i + 1 === level ? "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-primary dark:bg-primaryD hover:duration-75 hover:scale-105 active:scale-110" :
+                            "transition ease-in-out duration-500 h-[80px] w-[40px] rounded-r-[8px] font-bold text-tLight dark:text-tLightD text-[32px] align-middle bg-bgLight dark:bg-bgLightD hover:duration-75 hover:scale-105 active:scale-110"
                         } key={i + 1} value={btn.name} onClick={() => handleLevelSwitch(btn.name)}>{btn.name}</Button>
                     ))}
                 </div>
-                <div className="absolute bottom-[-1px] left-[50%] translate-x-[-50%] h-[85px] w-[380px] rounded-t-[16px] bg-bgDark dark:bg-bgDarkD
+                <div className="absolute bottom-[5px] left-[50%] translate-x-[-50%] h-[85px] w-[380px] rounded-[16px] bg-bgDark dark:bg-bgDarkD
                     flex flex-col transition ease-in-out duration-500
                 ">
                     <div className="flex items-center justify-center w-full h-[45px]">
                         <p className="font-bold text-tLight dark:text-tLightD text-[24px]">Корпус</p>
                     </div>
-                    <div className="pl-[20px] pr-[20px] flex flex-row gap-[20px]">
-                        <Button className={building === 1 ? "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-primary dark:bg-primaryD" :
-                            "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-bgLight dark:bg-bgLightD"} value="1 Копрус" onClick={() => handleBuildingSwitch(1)}
+                    <div className="pl-[20px] pr-[20px] flex flex-row gap-[20px] pb-[10px]">
+                        <Button className={building === 1 ? "flex items-center justify-center transition ease-in-out duration-500 w-[160px] h-[40px] rounded-[8px] bg-primary dark:bg-primaryD hover:duration-75 hover:scale-105 active:scale-110" :
+                            "flex items-center justify-center transition ease-in-out duration-500 w-[160px] h-[40px] rounded-[8px] bg-bgLight dark:bg-bgLightD hover:duration-75 hover:scale-105 active:scale-110"} value="1 Копрус" onClick={() => handleBuildingSwitch(1)}
         
-                        >1</Button>
-                        <Button className={building === 2 ? "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-primary dark:bg-primaryD" :
-                            "transition ease-in-out duration-500 w-[160px] h-[40px] rounded-t-[8px] font-bold text-tLight dark:text-tLightD text-[32px] bg-bgLight dark:bg-bgLightD"} value="2 Корпус" onClick={() => handleBuildingSwitch(2)}
+                        ><p className="font-bold text-tLight dark:text-tLightD text-[32px] transition ease-in-out duration-500">1</p></Button>
+                        <Button className={building === 2 ? "flex items-center justify-center transition ease-in-out duration-500 w-[160px] h-[40px] rounded-[8px] bg-primary dark:bg-primaryD hover:duration-75 hover:scale-105 active:scale-110" :
+                            "flex items-center justify-center transition ease-in-out duration-500 w-[160px] h-[40px] rounded-[8px] bg-bgLight dark:bg-bgLightD hover:duration-75 hover:scale-105 active:scale-110"} value="2 Корпус" onClick={() => handleBuildingSwitch(2)}
                             
-                        >2</Button> 
+                        ><p className="font-bold text-tLight dark:text-tLightD text-[32px] transition ease-in-out duration-500">2</p></Button> 
                     </div>
-
                 </div>
             </div>
         ) : (
@@ -494,7 +498,7 @@ const Editor = () => {
                             y={shadow.Y}
                             width={shadow.width}
                             height={shadow.height}
-                            fill={theme === 'light' ? "#0C86FF" : "#5696FD"}
+                            fill={theme === 'light' ? "#60a5fa" : "#5696FD"}
                             cornerRadius={8}
                             opacity={0.45}
                         />
@@ -506,10 +510,10 @@ const Editor = () => {
                             snapSize={snapSize}
                             shapeProps={room}
                             isSelected={room.id === selectedId}
-                            onDblClick={() => handleOpenComputer(room.id)}
+                            onDblClick={() => handleOpenComputer(room.id, room.name, room.audId)}
                             onSelect={editMode ? () => setSelectedId(room.id) : checkEditMode}
                             changeShadow={changeShadow}
-                            fillC={theme === 'light' ? "#0C86FF" : "#5696FD"}
+                            fillC={theme === 'light' ? "#60a5fa" : "#5696FD"}
                             dragStart={editMode ? handleDragStart : checkEditMode}
                             dragMove={editMode ? handleDragMove : checkEditMode}
                             circles={room.circles}
@@ -522,89 +526,90 @@ const Editor = () => {
                     ))}
                     </Layer>
                 </Stage>
-                <Dialog open={isComputerOpen} as="div" className="absolute z-10 focus:outline-none" onClose={handleCloseComputer}>
+                <Dialog open={isComputerOpen} as="div" data-theme={theme} className="absolute z-10 focus:outline-none" onClose={handleCloseComputer}>
                     <div className="relative focus:outline-none">
-                        <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 overflow-y-auto flex items-center justify-center">
+                        <div className="fixed h-[700px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 flex items-center justify-center">
                             <DialogPanel transition
-                                className="w-full space-y-4 p-4 max-w-md rounded-md bg-slate-600/20 backdrop-blur-md duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                                className="w-full space-y-[30px] p-4 max-w-3xl h-full rounded-[16px] bg-bgModal dark:bg-bgModalD duration-500 ease-in-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
-                                <DialogTitle className="text-base/7 ">
-                                    pamagiti?
-                                </DialogTitle>  
+                                <DialogTitle className="flex flex-col gap-[20x] mb-[30px]">
+                                    <p className="font-semibold text-[32px] text-tLight dark:text-tLightD">{openComputerName}</p>
+                                    <p className="text-[24px] text-tLight dark:text-tLightD ">Аудитория: {openComputerAud}</p>
+                                </DialogTitle>
+
                                 <div className="flex flex-row min-w-full items-end justify-between">
-                                    <div className="flex flex-col min-w-1/2 gap-2">
+                                    <div className="flex flex-row min-w-8/12 gap-2">
                                         <Listbox value={hardnessFilter} onChange={setHardnessFilter}>
                                             <ListboxButton
-                                                className={clsx(
-                                                    'relative block w-full rounded-lg bg-white/5 py-1.5 pr-8 pl-3 text-left text-sm/6 ',
-                                                    'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25'
-                                                )}
+                                                className=
+                                                    'relative w-[190px] h-[40px] py-1.5 rounded-lg bg-bgLight dark:bg-bgLightD pl-[10px] text-tLight dark:text-tLightD text-left text-[20px]'
                                                 >
                                                 {hardnessFilter.name[0]}
                                                 <ChevronDownIcon
-                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-black/60"
+                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
                                                     aria-hidden="true"
                                                 />
                                             </ListboxButton>
                                             <ListboxOptions anchor="bottom" transition 
                                                 className={clsx(
-                                                    'w-(--button-width) rounded-xl border border-white/5 bg-white/5 p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
-                                                    'transition duration-100 ease-in data-leave:data-closed:opacity-0'
+                                                    'w-(--button-width) rounded-[8px] bg-bgLight dark:bg-bgLightD p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
+                                                    'transition duration-100 ease-in data-leave:data-closed:opacity-0 flex flex-col gap-1'
                                                 )}
                                             >   
                                                 {hardnesses.map((hardness) => (
                                                     <ListboxOption
                                                         key={hardness.name[0]}
                                                         value={hardness} 
-                                                        className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:backdrop-blur-sm"
+                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                     >
                                                         {/* <CheckIcon className="invisible size-4 group-data-selected:visible"/> */}
-                                                        <div className="text-sm/6 ">{hardness.name[0]}</div>
+                                                        <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full">{hardness.name[0]}</div>
                                                     </ListboxOption>
                                                 ))}
                                             </ListboxOptions>
                                         </Listbox>
                                         <Listbox value={statusFilter} onChange={setStatusFilter}>
                                             <ListboxButton
-                                                className={clsx(
-                                                    'relative block w-full rounded-lg bg-white/5 py-1.5 pr-8 pl-3 text-left text-sm/6 ',
-                                                    'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25'
-                                                )}
+                                                className=
+                                                    'relative w-[190px] h-[40px] py-1.5 rounded-lg bg-bgLight dark:bg-bgLightD pl-[10px] text-tLight dark:text-tLightD text-left text-[20px]'
                                                 >
                                                 {statusFilter.name}
                                                 <ChevronDownIcon
-                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-black/60"
+                                                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-tLight dark:fill-tLightD"
                                                     aria-hidden="true"
                                                 />
                                             </ListboxButton>
                                             <ListboxOptions anchor="bottom" transition 
                                                 className={clsx(
-                                                    'w-(--button-width) rounded-xl border border-white/5 bg-white/5 p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
-                                                    'transition duration-100 ease-in data-leave:data-closed:opacity-0'
+                                                    'w-(--button-width) rounded-[8px] bg-bgLight dark:bg-bgLightD p-1 [--anchor-gap:--spacing(1)] focus:outline-none',
+                                                    'transition duration-100 ease-in data-leave:data-closed:opacity-0 flex flex-col gap-1'
                                                 )}
                                             >   
                                                 {statuses.map((status) => (
                                                     <ListboxOption
                                                         key={status.name}
                                                         value={status} 
-                                                        className="group flex cursor-default items-center gap-2 rounded-lg px-3 py-1.5 select-none data-focus:bg-slate/40 backdrop-blur-md hover:backdrop-blur-sm"
+                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                     >
                                                         {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
-                                                        <div className="text-sm/6 ">{status.name}</div>
+                                                        <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full ">{status.name}</div>
                                                     </ListboxOption>
                                                 ))}
                                             </ListboxOptions>
                                         </Listbox>
                                     </div>
-                                    <div>
-                                        <Button className="p-2 bg-slate-300 hover:bg-slate-400 rounded-xl" onClick={() => setIsBreakdownAdd(true)}>
-                                            Добавить ошибку
+                                    <div className="w-[190px] h-[40px]">
+                                        <Button className="w-full h-full bg-red hover:bg-red-600 rounded-[8px]" onClick={() => setIsBreakdownAdd(true)}>
+                                            <p className="w-full h-full text-tLight dark:text-tLightD text-[20px] py-1">Добавить ошибку</p>
                                         </Button>
                                     </div>
                                 </div>
-                                <ProfileStatistic key={statusFilter.value + hardnessFilter.value + openComputerId}
-                                    statusFilter={statusFilter.value} hardnessFilter={hardnessFilter.value}
-                                    isComputer={true} computerId={openComputerId}/>
+                                <div className="min-h-[480px]">
+                                    <ProfileStatistic key={statusFilter.value + hardnessFilter.value + openComputerId}
+                                        statusFilter={statusFilter.value} hardnessFilter={hardnessFilter.value}
+                                        isComputer={true} computerId={openComputerId}/>
+                                </div>
+                                
                             </DialogPanel>
                         </div>
                     </div>

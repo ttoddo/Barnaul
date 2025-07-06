@@ -75,7 +75,7 @@ const Header = function(props){
                 <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                     <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                         <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
-                        <p className='text-tLight dark:text-tLightD font-bold text-[48px]'>BGITU.FIX</p>
+                        <p className='text-tLight dark:text-tLightD font-bold text-[48px] transition ease-in-out duration-500'>BGITU.FIX</p>
                     </div>
                     {/* Тут должен быть скелетон кнопок. */}
                 </div>
@@ -88,7 +88,7 @@ const Header = function(props){
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
-                            <p className='text-tLight dark:text-tLightD font-bold text-[48px]'>BGITU.FIX</p>
+                            <p className='text-tLight dark:text-tLightD font-bold text-[48px] transition ease-in-out duration-500'>BGITU.FIX</p>
                         </div>
                         <div className='flex gap-[35px]'>
                             <HeaderBtn value='editor' onClick={handleEditorClick}/>
@@ -106,7 +106,7 @@ const Header = function(props){
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
-                            <p className='text-tLight dark:text-tLightD font-bold text-[48px]'>BGITU.FIX</p>
+                            <p className='text-tLight dark:text-tLightD font-bold text-[48px] transition ease-in-out duration-500'>BGITU.FIX</p>
                         </div>
                         <div className='flex gap-[35px]'>
                             <HeaderBtn value='editor' onClick={handleEditorClick}/>
@@ -123,7 +123,7 @@ const Header = function(props){
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
-                            <p className='text-tLight dark:text-tLightD font-bold text-[48px]'>BGITU.FIX</p>
+                            <p className='text-tLight dark:text-tLightD font-bold text-[48px] transition ease-in-out duration-500'>BGITU.FIX</p>
                         </div>
                     <div className='flex gap-[35px]'>
                         <HeaderBtn value='logout' onClick={handleSignInClick}/>

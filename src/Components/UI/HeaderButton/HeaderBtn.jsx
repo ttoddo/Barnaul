@@ -23,8 +23,8 @@ const HeaderBtn = function(props){
     const isDark = (localStorage.getItem("THEME") === 'dark')
     console.log(isDark)
     return (
-        <button className='cursor-pointer relative h-[55px] w-[55px]' {...props}>
-            <img className='absolute h-[55px] w-[55px] top-0 bottom-0 fill-tLight dark:fill-tLightD' src={logos[props.value]} alt="B"></img>
+        <button className='cursor-pointer relative h-[55px] w-[55px] hover:scale-90 active:scale-80 transition duration-75 ease' {...props}>
+            <img className='absolute h-full w-full top-0 bottom-0 fill-tLight dark:fill-tLightD' src={logos[props.value]} alt="B"></img>
         </button>
     )
 }

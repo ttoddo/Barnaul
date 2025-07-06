@@ -1,14 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@utility no-scrollbar {
+  @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden;
+}
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme {
-    --color-primary: #0C86FF;
-    --color-bgDark: #62748E;
-    --color-bgMiddle: #90A1B9;
-    --color-bgModal: #CAD5E2;
-    --color-bgLight: #E2E8F0;
-    --color-tDark: #314158;
+    --color-primary: #60a5fa;
+    --color-bgDark: oklch(80.9% 0.105 251.813);
+    --color-bgMiddle: oklch(88.2% 0.059 254.128);
+    --color-bgModal: oklch(93.2% 0.032 255.585);
+    --color-bgLight: oklch(97% 0.014 254.604);
+    --color-tDark: #646A7C;
     --color-tLight: #1D1D1D;
 
     --color-primaryD: #5696FD;
@@ -18,6 +23,10 @@
     --color-bgLightD: #28272D;
     --color-tDarkD: #646A7C;
     --color-tLightD: #E5E7EA;
+
+    --color-red: #FF3B30;
+    --color-orange: #FF8F30;
+    --color-yellow: #FFE630;
 }
 
 * {

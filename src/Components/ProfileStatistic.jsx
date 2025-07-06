@@ -37,7 +37,9 @@ const ProfileStatistic = function(props) {
         default:
           console.log('Backender needs to be punished.')
       }
-      return {key: breakdownInner.id, title: breakdownInner.description, date: breakdownInner.date,
+      let date = breakdownInner.createdAt.split(" ")[0]
+      let time = breakdownInner.createdAt.split(" ")[1]
+      return {key: breakdownInner.id, title: breakdownInner.description, date, time,
                       username: user.name, status: _status, color: _color, level: level}
     }
 
@@ -107,14 +109,14 @@ const ProfileStatistic = function(props) {
 
     if (isLoading){ // Проверка состояния загрузки
       return (
-        <div className='profileStat'>
+        <div className='w-full h-[250px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD'>
           <ErrorBlockSkeleton key={0}></ErrorBlockSkeleton> 
           <ErrorBlockSkeleton key={1}></ErrorBlockSkeleton>
         </div>
       )
     } else { // Сюда попадем только в случае, если загрузка кончилась 
       return (
-        <div className='profileStat'>
+        <div className='w-full h-[480px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD flex flex-col rounded-[8px]'>
             {error.map(error => 
                 <ErrorBlock error={error} key={error.key}/>
             )}
