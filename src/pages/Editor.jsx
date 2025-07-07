@@ -4,10 +4,9 @@ import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
 import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton} from '@headlessui/react'
-import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
-import { CheckIcon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 function shadowsReducer(state, action) {
     switch (action.type) {
@@ -278,6 +277,7 @@ const Editor = () => {
     }
 
     const handleOpenAuditory = (id) => {
+        setIsLoading(true)
         let width = 0;
         let height = 0
         rooms.forEach(room => {
@@ -335,6 +335,7 @@ const Editor = () => {
     }
 
     const handleOnClickText = () => {
+        setIsLoading(true)
         setStageId('0')
         setAudSizes({})
     }
@@ -384,7 +385,7 @@ const Editor = () => {
     }
     if (!isLoading && level && building){
         return stageId === '0' ? (
-            <div className="screenCont h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">   
+            <div className="relative w-full h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">   
                 <Stage key='GigaStage' id='0' onMouseDown={checkDeselect} onWheel={handleWheel}
                     width={canvasSize.width} height={canvasSize.height - 144} offsetX={-canvasSize.width / 2} offsetY={-canvasSize.height / 2}
                     scaleX={scale} scaleY={scale} draggable={true}>
@@ -476,7 +477,7 @@ const Editor = () => {
                 </div>
             </div>
         ) : (
-            <div className="screenCont h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">
+            <div className="relative w-full h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">
                 <Stage key="AudStage"
                     id={stageId}
                     onMouseDown={checkDeselect}
@@ -705,6 +706,12 @@ const Editor = () => {
                 </div>
             </div>
         )
-}};
+    } else {
+        return (
+            <div className="bg-bgMiddle dark:bg-bgMiddleD h-[calc(100vh-144px)]">Шкилет</div>
+        )
+    }
+
+};
 
 export default Editor

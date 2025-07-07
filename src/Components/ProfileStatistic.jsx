@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import '../styles/Profile.css'
 import ErrorBlock from './UI/ErrorBlock/ErrorBlck'
 import ErrorBlockSkeleton from './UI/ErrorBlock/ErrorBlckSkeleton'
 import { getBreakdowns, userInfo, changeBreakdown, deleteBreakdown } from './ApiReqests/ApiRequests'
@@ -143,7 +142,7 @@ const ProfileStatistic = function(props) {
       )
     } else { // Сюда попадем только в случае, если загрузка кончилась 
       return (
-        <div className='w-full h-[480px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD flex flex-col rounded-[8px] transition ease-out duration-500'>
+        <div className="w-full h-[480px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD flex flex-col rounded-[8px] transition ease-out duration-500">
             {error.map(error => 
                 <ErrorBlock breakdownSolve={handleBreakdownSolve} deleteBreakdown={handleBreakdownDelete} error={error} key={error.key}/>
             )}

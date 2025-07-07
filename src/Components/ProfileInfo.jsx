@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import CommonBtn from './UI/CommonButton/CommonBtn'
-import '../styles/Profile.css'
 import {logOut, userInfo} from './ApiReqests/ApiRequests'
 import { useNavigate } from 'react-router-dom'
 
 const ProfileInfo = function(props) {
-  const [userInformation, setUserInfo] = useState()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
       async function getUserInfo() {
-          let res = await userInfo(localStorage.getItem('TOKEN'))
-          console.log(res)
-          setUserInfo(res)
-          setIsLoading(false)
-          }
+
       getUserInfo()
   }, [])
 
