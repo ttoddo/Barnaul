@@ -3,7 +3,7 @@ import GigaRect from "../Components/EditorParts/RectComponent"
 import { Layer, Rect, Stage } from "react-konva";
 import { getAuds, userInfo, getComputers, addBreakdown, getBreakdowns } from "../Components/ApiReqests/ApiRequests";
 import { useNavigate } from 'react-router-dom'
-import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Legend, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton} from '@headlessui/react'
+import { Button, Dialog, DialogPanel, DialogTitle, Fieldset, Field, Textarea, Label, Listbox, ListboxOptions, ListboxOption, ListboxButton} from '@headlessui/react'
 import "../styles/Editor.css"
 import ProfileStatistic from "../Components/ProfileStatistic";
 import clsx from 'clsx'
@@ -130,10 +130,21 @@ const Editor = () => {
                     }
                 });
             }
-            let parsedRect = {id: rect.id.toString(), name: isComputer ? rect.serialNumber : rect.name,
-                X: x, Y: -y, width: width, height: height, levelId: isComputer ? null : rect.floor, buildingId: isComputer ? null : rect.buildingId,
-                audId: isComputer ? rect.auditoriumId.toString() : null, compId: isComputer ? rect.id : null,
-                circles, isComputer, openable: isComputer ? null : rect.isComputer ? true : false
+            Object.keys(circles).forEach(key => {
+                if (circles[key].count === 0) {
+                    delete circles[key]
+                }
+            });
+            let parsedRect = {id: rect.id.toString(),
+                name: isComputer ? rect.serialNumber : rect.name,
+                X: x, Y: -y, width: width, height: height,
+                levelId: isComputer ? null : rect.floor,
+                buildingId: isComputer ? null : rect.buildingId,
+                audId: isComputer ? rect.auditoriumId.toString() : null,
+                compId: isComputer ? rect.id : null,
+                circles,
+                isComputer,
+                openable: isComputer ? null : rect.isComputer ? true : false
             }
             
             if (isComputer){
@@ -371,7 +382,6 @@ const Editor = () => {
     const handleAddBreakdown = () => {
         setAddBreakdownFlag(true)
     }
-    //Галочка не работает из-за того, что data-selected делает полное сравнение, а у hardness И hardnessFilter разные указатели.. 
     if (!isLoading && level && building){
         return stageId === '0' ? (
             <div className="screenCont h-full bg-bgMiddle dark:bg-bgMiddleD transition ease-in-out duration-500">   
@@ -413,6 +423,7 @@ const Editor = () => {
                             isSelected={room.id === selectedId}
                             fillC={room.isComputer ? theme === 'light' ? "#60a5fa" : "#5696FD" : room.openable ? theme === "light" ? "#60a5fa" : "#5696FD" : "#646A7C"}
                             onDblClick={room.openable ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
+                            onDbTap={room.openable ? () => handleOpenAuditory(room.id) : () => handleClosedAuditory(room.id)}
                             onSelect={editMode ? () => {setSelectedId(room.id)} : checkEditMode}
                             changeShadow={changeShadow}
                             dragStart={editMode ? handleDragStart : checkEditMode}
@@ -511,6 +522,7 @@ const Editor = () => {
                             shapeProps={room}
                             isSelected={room.id === selectedId}
                             onDblClick={() => handleOpenComputer(room.id, room.name, room.audId)}
+                            onDbTap={() => handleOpenComputer(room.id, room.name, room.audId)}
                             onSelect={editMode ? () => setSelectedId(room.id) : checkEditMode}
                             changeShadow={changeShadow}
                             fillC={theme === 'light' ? "#60a5fa" : "#5696FD"}
@@ -530,7 +542,8 @@ const Editor = () => {
                     <div className="relative focus:outline-none">
                         <div className="fixed h-[720px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 flex items-center justify-center">
                             <DialogPanel transition
-                                className="w-full space-y-[30px] p-4 max-w-3xl h-full rounded-[16px] bg-bgModal dark:bg-bgModalD duration-500 ease-in-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                                className="w-full space-y-[30px] p-4 max-w-3xl h-full rounded-[16px] bg-bgModal dark:bg-bgModalD
+                                    duration-500 ease-in-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
                                 <DialogTitle className="flex flex-col gap-[20px] mb-[30px]">
                                     <p className="font-semibold text-[32px] text-tLight dark:text-tLightD">{openComputerName}</p>
@@ -560,7 +573,8 @@ const Editor = () => {
                                                     <ListboxOption
                                                         key={hardness.name[0]}
                                                         value={hardness} 
-                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
+                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2
+                                                            rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                     >
                                                         {/* <CheckIcon className="invisible size-4 group-data-selected:visible"/> */}
                                                         <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full">{hardness.name[0]}</div>
@@ -589,7 +603,8 @@ const Editor = () => {
                                                     <ListboxOption
                                                         key={status.name}
                                                         value={status} 
-                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
+                                                        className="hover:scale-105 group flex cursor-pointer items-center gap-2
+                                                            rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                     >
                                                         {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
                                                         <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full ">{status.name}</div>
@@ -618,11 +633,12 @@ const Editor = () => {
                     <div className="relative focus:outline-none">
                         <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] inset-0 overflow-y-auto flex items-center justify-center">
                             <DialogPanel transition
-                                className="w-full h-full max-w-2xl flex flex-col items-center justify-center rounded-[16px] bg-bgModal dark:bg-bgModalD duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                                className="w-full h-full max-w-2xl flex flex-col items-center justify-center
+                                    rounded-[16px] bg-bgModal dark:bg-bgModalD duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                             >
                                 <DialogTitle className="w-full pl-[30px] pr-[30px] pt-[30px] flex flex-row justify-between gap-[20x] mb-[30px]">
                                     <p className="font-semibold text-[32px] text-tLight dark:text-tLightD py-1.5">Добавление ошибки</p>
-                                    <div className="size-[60px] bg-bgLight dark:bg-bgLightD rounded-[8px]" onClick={handleBreakdownAddClose}>
+                                    <div className="size-[60px] bg-bgLight dark:bg-bgLightD rounded-[8px] hover:scale-110 active:scale-105" onClick={handleBreakdownAddClose}>
                                         <XMarkIcon className="size-[60px] fill-black dark:fill-white" />
                                     </div>
                                 </DialogTitle>
@@ -653,7 +669,8 @@ const Editor = () => {
                                                         <ListboxOption
                                                             key={hardness.name[1]}
                                                             value={hardness} 
-                                                            className="hover:scale-102 group flex cursor-pointer items-center gap-2 rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
+                                                            className="hover:scale-102 group flex cursor-pointer items-center gap-2
+                                                                rounded-[8px] bg-bgModal dark:bg-bgModalD px-3 py-1.5 select-none"
                                                         >
                                                             {/* <CheckIcon className="invisible size-4 fill-black group-data-selected:visible"/> */}
                                                             <div className="text-tLight dark:text-tLightD text-[20px] h-full w-full ">{hardness.name[1]}</div>
@@ -682,8 +699,9 @@ const Editor = () => {
                         </div>
                     </div>
                 </Dialog> 
-                <div onClick={handleOnClickText} className="absolute transition-colors duration-500 ease-in-out top-[15px] right-[15px] size-[80px] rounded-[8px] bg-bgDark dark:bg-bgDarkD hover:scale-110 active:scale-105">
-                    <XMarkIcon className="size-[80px] fill-black dark:fill-white py-0.5"/>
+                <div onClick={handleOnClickText} className="absolute transition-colors duration-500 ease-in-out top-[15px] right-[15px] size-[80px]
+                    rounded-[8px] bg-bgDark dark:bg-bgDarkD hover:scale-110 active:scale-105">
+                    <XMarkIcon className="size-[80px] fill-white py-0.5"/>
                 </div>
             </div>
         )

@@ -28,16 +28,16 @@ const refreshUser = async function (token, refreshToken) {
 
 const request = async function ( route, settings ) {
     let res = await fetch(route, settings)
-    if (res.status === 200 || res.status === 201){
+    if (res.status === 200 || res.status === 201 || res.status === 204){
         return res
     } else {
         const refreshRes = await refreshUser(localStorage.getItem("TOKEN"), localStorage.getItem("REFRESH_TOKEN"))
-        if (refreshRes.status === 200 || refreshRes.status === 201){
+        if (refreshRes.status === 200 || refreshRes.status === 201 || refreshRes.status === 204){
             settings.headers['Authorization'] = 'Bearer ' + localStorage.getItem("TOKEN")
             res = await fetch(route, settings)
-            if (res.status === 200 || res.status === 201){
+            if (res.status === 200 || res.status === 201 || res.status === 204){
                 return res
-            } else if (res.status === 400 || res.status === 401){
+            } else if (res.status === 400 || res.status === 401 || res.status === 204){
                 console.log("Проблема с JWT")
                 return false
             } else return false
@@ -160,6 +160,36 @@ export const addBreakdown = async function (token, info) {
     }
 }
 
+export const changeBreakdown = async function (token, id, status) {
+    let changeBreakdownSettings = JSON.parse(JSON.stringify(settings))
+    changeBreakdownSettings.method = 'PUT'
+    changeBreakdownSettings.headers['Authorization'] = "Bearer " + token
+    changeBreakdownSettings.body = JSON.stringify({isSolved: status})
+    let route = api + '/breakdown/' + id
+    const res = await request(route, changeBreakdownSettings)
+    if (res) {
+        console.log("Change Breakdown Success")
+        return true
+    } else {
+        console.log('Change Breakdown Success')
+        return false
+    }
+}
+
+export const deleteBreakdown = async function (token, id) {
+    let deleteBreakdownSettings = JSON.parse(JSON.stringify(settings))
+    deleteBreakdownSettings.method = 'DELETE'
+    deleteBreakdownSettings.headers['Authorization'] = "Bearer " + token
+    let route = api + '/breakdown/' + id
+    const res = await request(route, deleteBreakdownSettings)
+    if (res) {
+        console.log("Delete Breakdown Success")
+        return true
+    } else {
+        console.log('Delete Breakdown Success')
+        return false
+    }
+}
 
 export const logOut = function (){
     localStorage.removeItem('TOKEN')

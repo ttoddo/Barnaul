@@ -1,9 +1,19 @@
 import React, { useEffect, useRef } from "react";
-import { Group, Rect, Text, Circle, Transformer } from "react-konva";
+import { Group, Rect, Text, Circle, Transformer, Image } from "react-konva";
+import { useImage } from 'react-konva-utils';
+import computerSVG from "../../icons/computer.svg"
+import tvSVG from "../../icons/tv.svg"
+import projectorSVG from "../../icons/projector.svg"
+import printerSVG from "../../icons/printer.svg"
 
-const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode, circles, fillC}) => {
+const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragStart, dragMove, changeShadow, onDblClick, editMode, circles, fillC, onDbTap }) => {
     const shapeRef = useRef();
     const trRef = useRef();
+    const [computer] = useImage(computerSVG)
+    const [tv] = useImage(tvSVG)
+    const [projector] = useImage(projectorSVG)
+    const [printer] = useImage(printerSVG)
+
   
     useEffect(() => {
       if (isSelected) {
@@ -18,6 +28,7 @@ const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragSt
         <Group
           onDblClick={onDblClick}
           onClick={onSelect}
+          onDblTap={onDbTap}
           onTap={onSelect}
           ref={shapeRef}
           {...shapeProps}
@@ -71,9 +82,14 @@ const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragSt
           }}
         >
             <Rect fill={fillC} width={shapeProps.width} height={shapeProps.height} cornerRadius={8}/>
-            {Object.keys(circles).map((circle, i) => (
+            <Rect height={((shapeProps.width + shapeProps.height) / 20)*1.2} width={((shapeProps.width + shapeProps.height) / 20) * 1.25 * Object.keys(circles).length } fill={"#1C1C21"}
+              x={shapeProps.width - ((shapeProps.width + shapeProps.height) / 20 * 0.625 * (Object.keys(circles).length * 2 - 1))}
+              y={((shapeProps.width + shapeProps.height) / 20)/(-2)*1.2} cornerRadius={8}/>
+            {Object.keys(circles).reverse().map((circle, i) => (    
               <Group height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}
-                  x={shapeProps.width - (shapeProps.width / 25) * ((i+1)*2)} key={"group " + i}>
+                  x={shapeProps.width - ((shapeProps.width + shapeProps.height) / 20 * 1.25) * i} key={"group " + i}>
+                
+
                 <Circle key={"circle " + i} fill={circles[circle].color} listening={false}
                   height={(shapeProps.width + shapeProps.height) / 20} width={(shapeProps.width + shapeProps.height) / 20}/>
                 
@@ -81,11 +97,18 @@ const GigaRect = ({ shapeProps, isSelected, onSelect, onChange, snapSize, dragSt
                   key={"text " + i} text={circles[circle].count} fontSize={(((shapeProps.width + shapeProps.height) / 20)/10)*7.5}
                   x={((shapeProps.width + shapeProps.height) / 20)/(-2)}
                   y={((shapeProps.width + shapeProps.height) / 20)/(-2)}
-                  verticalAlign="middle" align="center"
+                  verticalAlign="middle" align="center" fontStyle="bold"
                 />
               </Group>
             ))}  
-            <Text text={shapeProps.name} fontSize={(shapeProps.width + shapeProps.height) / 20} width={shapeProps.width} height={shapeProps.height} verticalAlign="middle" align="center"></Text>
+            {
+              shapeProps.isComputer ? <Image image={computer}
+                width={shapeProps.width / 2} height={shapeProps.height / 2}
+                x={shapeProps.width / 4}
+                y={shapeProps.height / 4} /> : 
+              <Text text={shapeProps.name} fontSize={(shapeProps.width + shapeProps.height) / 20}
+                width={shapeProps.width} height={shapeProps.height} verticalAlign="middle" align="center"/>
+            }
         </Group>
         {isSelected && (
           <Transformer

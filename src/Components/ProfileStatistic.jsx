@@ -2,11 +2,17 @@ import React, { useCallback, useEffect, useState } from 'react'
 import '../styles/Profile.css'
 import ErrorBlock from './UI/ErrorBlock/ErrorBlck'
 import ErrorBlockSkeleton from './UI/ErrorBlock/ErrorBlckSkeleton'
-import { getBreakdowns, userInfo } from './ApiReqests/ApiRequests'
+import { getBreakdowns, userInfo, changeBreakdown, deleteBreakdown } from './ApiReqests/ApiRequests'
 
 const ProfileStatistic = function(props) {
     const [isLoading, setIsLoading] = useState(true) // Здесь состояние загрузки, которое мы меняем после выполнения запросов
     const [error, setError] = useState([])
+    const [breakdownSolve, setBreakdownSolve] = useState(false)
+    const [solveId, setSolveId] = useState()
+    const [solveState, setSoveState] = useState()
+    const [brekadownDelete, setBreakdownDelete] = useState()
+    const [deleteId, setDeleteId] = useState()
+
     function byLevel(a, b){
       return b.level - a.level;
     }
@@ -86,6 +92,7 @@ const ProfileStatistic = function(props) {
             tempError = tempError.filter(err => err.status === 'Solved')
             break;
         }
+
         return tempError
     }, [])
 
@@ -100,12 +107,32 @@ const ProfileStatistic = function(props) {
             
             // await sleep(5000) // Это удалишь, как разберешься, как это работает
             let parsedErrors = parseErrors(breakdowns.response, user, props.isComputer, props.hardnessFilter, props.statusFilter) // Здесь мы собираем ошибки, полученные в запросе в нормальный вид
+            console.log(parsedErrors)
+            if (breakdownSolve) {
+              let res = await changeBreakdown(token, solveId, solveState)
+              setBreakdownSolve(false)
+            }
+            if (brekadownDelete){
+              let res = await deleteBreakdown(token, deleteId)
+              setBreakdownDelete(false)
+            }
+
             setError(parsedErrors) // А тут уже устанавливаем их и только после этого сообщаем, что загрузка завершена.
             setIsLoading(false) // Тут мы меняем состояние загрузки == загрузка закончилась. Все изменения состояний проводят обновление вкладки, но так как прошлые set функции изменялись,
                                 // но isLoading был false, мы не попадали во вторую часть кода только с данными пользователя.
         }
         getUserAndBreakdowns()
-    }, [])
+    }, [breakdownSolve, brekadownDelete])
+
+    const handleBreakdownSolve = (currState, id) => {
+      setBreakdownSolve(true)
+      setSolveId(id)
+      setSoveState(!currState)
+    }
+    const handleBreakdownDelete = (id) => {
+      setBreakdownDelete(true)
+      setDeleteId(id)
+    }
 
     if (isLoading){ // Проверка состояния загрузки
       return (
@@ -116,9 +143,9 @@ const ProfileStatistic = function(props) {
       )
     } else { // Сюда попадем только в случае, если загрузка кончилась 
       return (
-        <div className='w-full h-[480px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD flex flex-col rounded-[8px]'>
+        <div className='w-full h-[480px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD flex flex-col rounded-[8px] transition ease-out duration-500'>
             {error.map(error => 
-                <ErrorBlock error={error} key={error.key}/>
+                <ErrorBlock breakdownSolve={handleBreakdownSolve} deleteBreakdown={handleBreakdownDelete} error={error} key={error.key}/>
             )}
         </div>
       ) // А тут выводится уже нормальный ErrorBlock
