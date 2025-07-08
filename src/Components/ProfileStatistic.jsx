@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import ErrorBlock from './UI/ErrorBlock/ErrorBlck'
-import ErrorBlockSkeleton from './UI/ErrorBlock/ErrorBlckSkeleton'
 import { getBreakdowns, userInfo, changeBreakdown, deleteBreakdown } from './ApiReqests/ApiRequests'
 
 const ProfileStatistic = function(props) {
@@ -106,7 +105,6 @@ const ProfileStatistic = function(props) {
             
             // await sleep(5000) // Это удалишь, как разберешься, как это работает
             let parsedErrors = parseErrors(breakdowns.response, user, props.isComputer, props.hardnessFilter, props.statusFilter) // Здесь мы собираем ошибки, полученные в запросе в нормальный вид
-            console.log(parsedErrors)
             if (breakdownSolve) {
               let res = await changeBreakdown(token, solveId, solveState)
               setBreakdownSolve(false)
@@ -135,9 +133,7 @@ const ProfileStatistic = function(props) {
 
     if (isLoading){ // Проверка состояния загрузки
       return (
-        <div className='w-full h-[250px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD'>
-          <ErrorBlockSkeleton key={0}></ErrorBlockSkeleton> 
-          <ErrorBlockSkeleton key={1}></ErrorBlockSkeleton>
+        <div className='w-full h-[250px] overflow-y-scroll no-scrollbar bg-bgLight dark:bg-bgLightD transition duration-500 ease-in-out'>
         </div>
       )
     } else { // Сюда попадем только в случае, если загрузка кончилась 

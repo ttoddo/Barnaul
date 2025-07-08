@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 const Footer = function(props){
     const themes = {
-        light: "flex items-center justify-between fixed bottom-0 min-w-screen h-18 bg-bgDark transition-colors ease-in-out duration-500",
-        dark: "flex items-center justify-between fixed bottom-0 min-w-screen h-18 bg-bgDarkD transition-colors ease-in-out duration-500"
+        light: "flex items-center justify-between min-w-screen h-18 bg-bgDark transition-colors ease-in-out duration-500",
+        dark: "flex items-center justify-between min-w-screen h-18 bg-bgDarkD transition-colors ease-in-out duration-500"
     }
 
     return (

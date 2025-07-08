@@ -4,7 +4,6 @@ import {Routes, Route} from 'react-router-dom';
 import LoginForm from "../pages/LoginForm";
 import Profile from '../pages/Profile';
 import Admin from '../pages/Admin';
-import HomePage from '../Components/UI/HomePage/HomePage';
 import Editor from '../pages/Editor'
 
 const Main = () => {

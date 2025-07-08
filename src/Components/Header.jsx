@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import logo from '../icons/logo.svg'
 import HeaderBtn from './UI/HeaderButton/HeaderBtn'
 import {logOut, userInfo} from './ApiReqests/ApiRequests'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Header = function(props){
     const linePoses = {
@@ -18,7 +18,20 @@ const Header = function(props){
         light: "bg-bgDark min-w-screen h-18 flex items-center align-middle transition-colors ease-in-out duration-500",
         dark: "bg-bgDarkD min-w-screen h-18 flex items-center align-middle transition-colors ease-in-out duration-500"
     }
-
+    const location =  useLocation().pathname
+   
+    const chooseLocation = (isAdmin) => {
+        switch (location.slice(1)){
+            case 'profile':
+                return "profile" + (isAdmin ? "Admin" : "")
+            case 'editor':
+                return "editor" + (isAdmin ? "Admin" : "")
+            case 'admin': 
+                return "admin"
+            default:
+                return "logout"
+        }
+    }
 
     const [userInformation, setUserInfo] = useState()
     const [isLoading, setIsLoading] = useState(true)
@@ -36,7 +49,8 @@ const Header = function(props){
                 setIsLoading(false)
             }
             if (res){
-                setCurrentLink(res.role === 'ROLE_ADMIN' ? "editorAdmin" : "editor")
+                let loc = chooseLocation(res.role === "ROLE_ADMIN")
+                setCurrentLink(loc)
                 setUserInfo(res)
                 setIsLoading(false)
             } else {
@@ -71,7 +85,7 @@ const Header = function(props){
     }
     if (isLoading){
         return (
-            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle fixed top-0'>
+            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle fixed top-0 transition duration-500 ease-in-out'>
                 <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                     <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                         <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
@@ -119,7 +133,7 @@ const Header = function(props){
             )
         } else {
         return (
-            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle'>
+            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle transition duration-500 ease-in-out'>
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>

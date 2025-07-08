@@ -191,12 +191,20 @@ export const deleteBreakdown = async function (token, id) {
     }
 }
 
-export const logOut = function (){
-    localStorage.removeItem('TOKEN')
-    localStorage.removeItem('REFRESH_TOKEN')
-    window.location.reload()
-    console.log('LogOut Success')
-    return
+export const getUsers = async function (token) {
+    let getUsersSettings = JSON.parse(JSON.stringify(settings))
+    getUsersSettings.method = 'GET'
+    getUsersSettings.headers['Authorization'] = 'Bearer ' + token
+    let route = api + '/user'
+    const res = await request(route, getUsersSettings)
+    if (res) {
+        let data = await res.json()
+        console.log('GetUsers Success')
+        return data
+    } else{
+        console.log('GetUsers Error')
+        return false
+    }
 }
 
 export const addUser = async function (username, email, password, role, token) {
@@ -205,44 +213,47 @@ export const addUser = async function (username, email, password, role, token) {
     addUserSettings.headers['Authorization'] = 'Bearer ' + token
     addUserSettings.body = JSON.stringify(
         {
-            username: username,
+            name: username,
             email: email,
             password: password,
-            role: role
+            role: role, 
+            sentNotifications: false
         }
     )
-    try{    
-        const res = await fetch(api + '/auth/sign-up', addUserSettings)
-        const data = await res.json()
+    let route = api + '/auth/sign-up'
+    const res = await request(route, addUserSettings)
+    if (res) {    
         console.log('AddUser Success')
-        return data
-    } catch {
+        return true
+    } else {
         console.log('AddUser Error')
         return false
     }
 }
 
-
-
-export const getUsers = async function (token) {
-    let getUsersSettings = JSON.parse(JSON.stringify(settings))
-    getUsersSettings.method = 'GET'
-    getUsersSettings.headers['Authorization'] = 'Bearer ' + token
-    try {
-      const res = await fetch(api + '/profile/get-all', getUsersSettings)
-      const data = await res.json()
-      if (data.users[0]){
-          console.log('GetUsers Success')
-          return data
-      } else{
-          console.log('GetUsers Error')
-          return false
-      }
-  } catch {
-      console.log('GetUsers Error')
-      return false
-  }
+export const removeUser = async function (id, token) {
+    let removeUserSettings = JSON.parse(JSON.stringify(settings))
+    removeUserSettings.method = 'DELETE'
+    removeUserSettings.headers['Authorization'] = 'Bearer ' + token
+    let route = api + '/user/' + id
+    let res = await request(route, removeUserSettings)
+    if (res){
+        console.log('Remove Success')
+        return true
+    } else {
+        console.log('Remove Error')
+        return false
+    }
 }
+
+export const logOut = function (){
+    localStorage.removeItem('TOKEN')
+    localStorage.removeItem('REFRESH_TOKEN')
+    window.location.reload()
+    console.log('LogOut Success')
+    return
+}
+
 
 
 export const editUser = async function (id, username, email, password, token){
@@ -274,22 +285,4 @@ export const editUser = async function (id, username, email, password, token){
     }
 }
 
-export const removeUser = async function (id, token) {
-    let removeUserSettings = JSON.parse(JSON.stringify(settings))
-    removeUserSettings.method = 'DELETE'
-    removeUserSettings.headers['Authorization'] = 'Bearer ' + token
-    try{
-        const res = await fetch(api + '/profile/delete/' + id, removeUserSettings)
-        if (res.ok){
-            console.log('Remove Success')
-            return true
-        } else{
-            console.log('Remove Error')
-            return false
-        }
-    } catch{
-        console.log('Remvoe Error')
-        return false
-    }
-}
 

@@ -288,7 +288,6 @@ const Editor = () => {
         });
         let x = -width / 2 
         let y = -height / 2
-        console.log({x, y, width, height})
         setAudSizes({x, y, width, height})
         setStageId(id);
     }
