@@ -1,6 +1,5 @@
 import { Switch, Field, Label } from '@headlessui/react'
 import { MoonIcon, SunIcon } from '@heroicons/react/24/solid'
-import React, { useCallback, useEffect, useState } from 'react'
 
 const Footer = function(props){
     const themes = {
@@ -9,12 +8,12 @@ const Footer = function(props){
     }
 
     return (
-        <div className={`${themes[props.theme]}`}>
+        <div className={`${props.theme ? themes[props.theme] : themes["light"]}`}>
             <div className='ml-[25px]'>
                 <p className='text-[48px] font-semibold text-tLight dark:text-tLightD transition ease-in-out duration-750'>© ВДК 2025</p>
             </div>
             <Field className='h-full flex items-center flex-col gap-[5px] mr-[25px]'>
-                <Label className='text-tLight dark:text-tLightD'>Темная тема</Label>
+                <Label className='text-tLight dark:text-tLightD'>Выбор темы</Label>
                 <Switch checked={props.theme === 'dark' ? true : false} onChange={props.handleChange}
                     className='group inline-flex h-8 w-18 items-center rounded-full bg-bgLight dark:bg-bgLightD
                     cursor-pointer transition'

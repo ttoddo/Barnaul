@@ -77,7 +77,7 @@ const Admin = () => {
             <dl className='divide-y divide-tDark border-t-tDark border-t-[1px]'>
               <div className="px-4 py-8 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-tLight dark:text-tLightD font-bold transition ease-in-out duration-500">Пользователей</dt>
-                <dd className="text-tLight dark:text-tLightD transition ease-in-out duration-500">{userInf.name}</dd>
+                <dd className="text-tLight dark:text-tLightD transition ease-in-out duration-500">{users.length}</dd>
               </div>
               <div className="px-4 py-8 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-tLight dark:text-tLightD font-bold transition ease-in-out duration-500">Ошибок</dt>

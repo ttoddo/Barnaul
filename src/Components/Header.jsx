@@ -67,9 +67,6 @@ const Header = function(props){
         setCurrentLink(userInformation.role === 'ROLE_ADMIN' ? "profileAdmin" : "profile")
         navigate('/profile')
     }
-    function handleSignInClick(){
-        navigate('/signin')
-    }
     function handleLogOutClick(){
         setCurrentLink("logout")
         navigate('/signin')
@@ -140,14 +137,11 @@ const Header = function(props){
                             <p className='text-tLight dark:text-tLightD font-bold text-[48px] transition ease-in-out duration-500'>BGITU.FIX</p>
                         </div>
                     <div className='flex gap-[35px]'>
-                        <HeaderBtn value='logout' onClick={handleSignInClick}/>
                     </div>
-                    <div className={`${linePoses[currentLink]}`}></div>
                 </div>
             </div>
         )}
     }
-    
 }
 
 export default Header
