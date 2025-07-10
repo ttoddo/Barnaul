@@ -1,9 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@headlessui/react'
+import { getUserById } from '../../ApiReqests/ApiRequests'
+
 
 
 
 const ErrorBlock = function(props) {
+  const [username, setUsername] = useState()
+  const [isLoading, setIsLoading] = useState()
+  useEffect(() => {
+    const getName = async () => {
+      console.log(props.error.userId)
+      let res = await getUserById(props.error.userId, localStorage.getItem('TOKEN'))
+      if (res) {
+        setUsername(res.response.name)
+      }
+      setIsLoading(false)
+    }
+    getName()
+  }, [])
+  if (!isLoading){
   return (
     <div className="w-full border-y-1 border-tDark first:border-t-0 min-h-[120px] flex justify-between">
         <div className="relative flex flex-col h-full w-full">
@@ -11,7 +27,7 @@ const ErrorBlock = function(props) {
             <div className='h-[70px] w-full pl-[75px] pt-[10px] pr-[10px] flex justify-between'>
               <p className='w-10/12 text-[24px] text-tLight dark:text-tLightD'>{props.error.title}</p>
               <div className='h-full flex-col w-2/12'>
-                <p className='text-tLight dark:text-tLightD text-[20px] text-right w-full'>{props.error.username}</p>
+                <p className='text-tLight dark:text-tLightD text-[20px] text-right w-full'>{username}</p>
                 <p className='text-tLight dark:text-tLightD text-[13px] text-right w-full'>{props.error.time} <span className='text-tDark text-[13px]'>{props.error.date}</span></p>
               </div>
             </div>
@@ -29,6 +45,6 @@ const ErrorBlock = function(props) {
         </div>
     </div>
   )
-}
+}}
 
 export default ErrorBlock

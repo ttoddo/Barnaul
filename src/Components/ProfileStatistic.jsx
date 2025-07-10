@@ -15,7 +15,7 @@ const ProfileStatistic = function(props) {
       return b.level - a.level;
     }
 
-    const collectBreakdown = (breakdownInner, user) => {
+    const collectBreakdown = (breakdownInner) => {
       let _color = ''
       let _status
       let level = breakdownInner.level
@@ -44,7 +44,7 @@ const ProfileStatistic = function(props) {
       let date = breakdownInner.createdAt.split(" ")[0]
       let time = breakdownInner.createdAt.split(" ")[1]
       return {key: breakdownInner.id, title: breakdownInner.description, date, time,
-                      username: user.name, status: _status, color: _color, level: level}
+                      userId: breakdownInner.userId, status: _status, color: _color, level: level}
     }
 
     const parseErrors = useCallback((breakdowns, user, isComputer, hardnessF, statusF) => {
@@ -52,14 +52,14 @@ const ProfileStatistic = function(props) {
         if (isComputer){ // Проверка, для компьютера ли мы собираем данные. Этот компонент теперь используется в профиле и в модалке в редакторе.
           for (let i = 0; i < breakdowns.length; i++){
             if (breakdowns[i].computerId.toString() === props.computerId){
-              let tempBrk = collectBreakdown(breakdowns[i], user) // Функция сборки в json выше
+              let tempBrk = collectBreakdown(breakdowns[i]) // Функция сборки в json выше
               tempError.push(tempBrk)
             }
           }
         } else {
           for (let i = 0; i < breakdowns.length; i++){
             if (breakdowns[i].userId === user.id){
-              let tempBrk = collectBreakdown(breakdowns[i], user)
+              let tempBrk = collectBreakdown(breakdowns[i])
               tempError.push(tempBrk)
             }
           }

@@ -15,8 +15,8 @@ const Header = function(props){
     }
 
     const themes = {
-        light: "bg-bgDark min-w-screen h-18 flex items-center align-middle transition-colors ease-in-out duration-500",
-        dark: "bg-bgDarkD min-w-screen h-18 flex items-center align-middle transition-colors ease-in-out duration-500"
+        light: "bg-bgDark h-18 flex items-center align-middle transition-colors ease-in-out duration-500",
+        dark: "bg-bgDarkD h-18 flex items-center align-middle transition-colors ease-in-out duration-500"
     }
     const location =  useLocation().pathname
    
@@ -82,7 +82,7 @@ const Header = function(props){
     }
     if (isLoading){
         return (
-            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle fixed top-0 transition duration-500 ease-in-out'>
+            <div className='bg-bgDark dark:bg-bgDarkD h-18 flex items-center align-middle fixed top-0 transition duration-500 ease-in-out'>
                 <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                     <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                         <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
@@ -113,7 +113,7 @@ const Header = function(props){
             )}
         else if (userInformation.role === 'ROLE_USER') {
             return (
-                <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle'>
+                <div className='bg-bgDark dark:bg-bgDarkD h-18 flex items-center align-middle transition duration-500 ease-in-out'>
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>
@@ -130,7 +130,7 @@ const Header = function(props){
             )
         } else {
         return (
-            <div className='bg-bgDark dark:bg-bgDarkD min-w-screen h-18 flex items-center align-middle transition duration-500 ease-in-out'>
+            <div className='bg-bgDark dark:bg-bgDarkD h-18 flex items-center align-middle transition duration-500 ease-in-out'>
                     <div className='relative flex justify-between items-center ml-[25px] mr-[25px] h-full w-full'>
                         <div className='flex row h-full items-center gap-[20px] max-w-4/12 invisible lg:visible'>
                             <img src={logo} className='cursor-pointer' alt="logo" onClick={handleEditorClick}/>

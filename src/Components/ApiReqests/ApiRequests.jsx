@@ -246,6 +246,24 @@ export const removeUser = async function (id, token) {
     }
 }
 
+export const getUserById = async function (id, token) {
+    let getUserByIdSettings = JSON.parse(JSON.stringify(settings))
+    getUserByIdSettings.method = 'GET'
+    getUserByIdSettings.headers['Authorization'] = 'Bearer ' + token
+    let route = api + '/user/' + id
+    let res = await request(route, getUserByIdSettings)
+    if (res) {
+        let data = await res.json()
+        console.log("GetUserById Success")
+        return data
+    }
+    else {
+        console.log("GetUserById Error")
+        return false
+    }
+}
+
+
 export const logOut = function (){
     localStorage.removeItem('TOKEN')
     localStorage.removeItem('REFRESH_TOKEN')

@@ -21,7 +21,7 @@ function App() {
   }
 
   return (
-    <div className="App" data-theme={theme}>
+    <div className="App overflow-hidden" data-theme={theme}>
       <Header theme={theme}/>
       <Main theme={theme}/>
       <Footer handleChange={handleChange} theme={theme}/>

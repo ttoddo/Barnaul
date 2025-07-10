@@ -3,8 +3,8 @@ import { MoonIcon, SunIcon } from '@heroicons/react/24/solid'
 
 const Footer = function(props){
     const themes = {
-        light: "flex items-center justify-between min-w-screen h-18 bg-bgDark transition-colors ease-in-out duration-500",
-        dark: "flex items-center justify-between min-w-screen h-18 bg-bgDarkD transition-colors ease-in-out duration-500"
+        light: "flex items-center justify-between h-18 bg-bgDark transition-colors ease-in-out duration-500",
+        dark: "flex items-center justify-between h-18 bg-bgDarkD transition-colors ease-in-out duration-500"
     }
 
     return (
